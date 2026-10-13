@@ -1,0 +1,241 @@
+/* ============================================================
+   calc-ops.css — صفحة الآلة الحاسبة (الإصدار 2)
+   قائمة عمليات ثابتة منسدلة + آلة حاسبة بجانبها
+   ============================================================ */
+
+/* ── التخطيط: عمودان متوازنان ── */
+.calc-layout.calc-layout--ops {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 430px);
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  align-items: start;
+  --panel-h: clamp(480px, calc(100vh - var(--nav-h) - 60px), 560px);
+}
+.ops-col, .calc-side { position: sticky; top: calc(var(--nav-h) + 16px); min-width: 0; }
+.calc-layout--ops .calc-side .calc-wrapper { position: static; max-width: 470px; margin-inline: auto; }
+
+@media (max-width: 900px) {
+  .calc-layout.calc-layout--ops { grid-template-columns: minmax(0, 1fr); --panel-h: auto; }
+  .ops-col, .calc-side { position: static; }
+}
+
+/* ── رأس كل عمود ── */
+.col-head { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; margin-bottom: .6rem; padding-inline: .2rem; }
+.col-head h2 { font-size: 1rem; font-weight: 900; margin: 0; display: flex; align-items: center; gap: .5rem; }
+.col-head h2::before {
+  content: ''; width: 10px; height: 10px; border-radius: 2px; background: var(--hl);
+  border: 1.5px solid var(--line); transform: rotate(45deg);
+}
+.col-head span { font-size: .78rem; color: var(--text-muted); font-weight: 600; }
+
+/* ── لوحة العمليات ── */
+.calc-layout--ops .ops {
+  position: relative; display: flex; flex-direction: column; padding: 0; overflow: hidden;
+  height: var(--panel-h);
+}
+@media (max-width: 900px) { .calc-layout--ops .ops { height: auto; } }
+
+/* التبويبات: شريط ثابت متعدد الأسطر */
+.calc-layout--ops .ops-tabs {
+  flex: none; margin: 0; padding: .85rem .9rem; gap: .35rem;
+  background: var(--bg-secondary); border-bottom: 2px solid var(--line);
+}
+.calc-layout--ops .ops-tab {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .32rem .7rem; font-size: .8rem; border-radius: 8px; white-space: nowrap;
+}
+.calc-layout--ops .ops-tab [aria-hidden] { font-family: var(--font-mono); font-size: .8rem; }
+.calc-layout--ops .ops-tab.active { box-shadow: 2px 2px 0 var(--shadow-ink); transform: translate(-1px, -1px); }
+
+/* منطقة القائمة القابلة للتمرير مع تلاشٍ في الأسفل */
+.calc-layout--ops .ops-body {
+  position: relative; flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent; padding: .9rem .9rem 1.6rem;
+}
+@media (max-width: 900px) { .calc-layout--ops .ops-body { max-height: 60vh; } }
+.calc-layout--ops .ops-note { margin-bottom: .75rem; font-size: .8rem; padding: .5rem .75rem; }
+
+/* ── القائمة المنسدلة ── */
+.ops-list { --cat: var(--accent); counter-reset: op; display: flex; flex-direction: column; gap: .45rem; }
+.ops-list[data-cat="power"]    { --cat: var(--accent-2); }
+.ops-list[data-cat="trig"]     { --cat: var(--accent-3); }
+.ops-list[data-cat="log"]      { --cat: var(--accent-4); }
+.ops-list[data-cat="ineq"]     { --cat: var(--accent-3); }
+.ops-list[data-cat="complex"]  { --cat: var(--accent-4); }
+.ops-list[data-cat="calculus"] { --cat: var(--accent); }
+.ops-list[data-cat="combo"]    { --cat: var(--accent-2); }
+
+.ops-item {
+  position: relative; background: var(--bg-card); border: 1.5px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+.ops-item::before {
+  content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; width: 4px;
+  background: var(--cat); opacity: .45; transition: opacity var(--transition), width var(--transition);
+}
+.ops-item:hover { border-color: var(--line); }
+.ops-item:hover::before { opacity: 1; }
+.ops-item.open { border-color: var(--line); box-shadow: 3px 3px 0 var(--shadow-ink); }
+.ops-item.open::before { opacity: 1; width: 6px; }
+
+.ops-head {
+  width: 100%; display: flex; align-items: center; gap: .65rem; text-align: start;
+  background: transparent; border: 0; color: var(--text-primary); font-family: var(--font-main);
+  cursor: pointer; padding: .6rem .8rem .6rem .7rem; padding-inline-start: 1rem; min-height: 50px;
+}
+.ops-head::before {
+  counter-increment: op; content: counter(op, decimal-leading-zero);
+  flex: none; font: 700 .7rem var(--font-mono); color: var(--cat);
+  background: color-mix(in srgb, var(--cat) 14%, transparent);
+  border-radius: 6px; padding: .12rem .38rem; direction: ltr;
+}
+.ops-head:hover, .ops-item.open .ops-head { background: var(--hl-soft); }
+.ops-head .ops-name { flex: 1; min-width: 0; font-size: .93rem; font-weight: 800; line-height: 1.4; }
+.ops-head .ops-syn {
+  flex: none; direction: ltr; unicode-bidi: isolate; font: 600 .75rem var(--font-mono);
+  color: var(--text-secondary); background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: 6px; padding: .08rem .45rem; white-space: nowrap;
+}
+.ops-chev {
+  flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--border); font-size: .55rem; color: var(--text-muted);
+  transition: transform var(--transition), background var(--transition), color var(--transition);
+}
+.ops-item.open .ops-chev { transform: rotate(180deg); background: var(--hl); color: #0d1633; border-color: var(--line); }
+
+/* ── محتوى العملية ── */
+.ops-panel { padding: .2rem .9rem .95rem; padding-inline-start: 1.2rem; animation: ops-in .2s ease; }
+.ops-panel[hidden] { display: none; }
+@keyframes ops-in { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
+.ops-panel .ops-desc { padding: 0; margin: .2rem 0 .75rem; font-size: .84rem; line-height: 1.85; color: var(--text-secondary); }
+
+.ops-example {
+  position: relative; background: var(--lcd-bg); color: var(--lcd-fg);
+  border: 2px solid var(--line); border-radius: 10px; padding: .6rem .8rem .65rem;
+  margin-bottom: .7rem; direction: ltr; text-align: left; font-family: var(--font-mono);
+  overflow-wrap: anywhere;
+}
+.ops-example small {
+  display: inline-block; font-size: .64rem; font-weight: 700; letter-spacing: 1px; opacity: .6;
+  margin-bottom: .25rem; padding: .02rem .4rem; border: 1px solid currentColor; border-radius: 4px;
+}
+.ops-example .ex-expr { font-size: .92rem; opacity: .85; }
+.ops-example .ex-res { font-size: 1.3rem; font-weight: 700; line-height: 1.3; }
+
+.ops-actions { display: grid; grid-template-columns: 1.4fr 1fr; gap: .5rem; }
+.ops-act {
+  min-height: 42px; cursor: pointer; font-family: var(--font-main); font-size: .84rem; font-weight: 800;
+  border: 1.5px solid var(--line); border-radius: 8px; background: var(--bg-card); color: var(--text-primary);
+  box-shadow: 2px 2px 0 var(--shadow-ink); display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+}
+.ops-act.primary { background: var(--hl); color: #0d1633; }
+.ops-act.primary::after { content: '←'; font: 800 1rem var(--font-mono); }
+[dir="ltr"] .ops-act.primary::after { content: '→'; }
+.ops-act:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--shadow-ink); }
+.ops-act:active { transform: translate(2px, 2px); box-shadow: none; }
+@media (max-width: 420px) { .ops-actions { grid-template-columns: 1fr; } }
+
+/* السجل داخل اللوحة */
+.calc-layout--ops .ops-history { margin: 0; }
+.calc-layout--ops .history-list { max-height: none; }
+
+/* ── Empty State ── */
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem 1rem; gap: .6rem; color: var(--text-secondary); }
+.empty-icon { font-size: 2rem; opacity: .8; }
+.empty-title { margin: 0; font-size: 1rem; font-weight: 800; color: var(--text-primary); }
+.empty-desc { margin: 0; font-size: .85rem; opacity: .9; }
+
+/* ============================================================
+   إضافات الصفحات الجديدة (شريط الإدخال · اللوحات · النتائج)
+   ============================================================ */
+
+/* ── شريط الإدخال + النتيجة (حاسبة/أنظمة) ── */
+.calc-bar {
+  display: flex; align-items: stretch; flex-wrap: wrap; gap: .55rem;
+  background: var(--bg-card); border: 2px solid var(--line); border-radius: 14px;
+  padding: .6rem; box-shadow: 3px 3px 0 var(--shadow-ink); margin-bottom: 1.4rem;
+}
+.calc-bar .bar-btn {
+  min-height: 44px; padding: .5rem .9rem; cursor: pointer;
+  font: 800 .88rem var(--font-main); color: var(--text-primary);
+  background: var(--bg-card); border: 2px solid var(--line); border-radius: 10px;
+  box-shadow: 2px 2px 0 var(--shadow-ink); white-space: nowrap;
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+}
+.calc-bar .bar-btn:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--shadow-ink); }
+.calc-bar .bar-btn:active { transform: translate(1px, 1px); box-shadow: none; }
+.calc-bar .bar-btn[aria-pressed="true"] {
+  background: var(--hl); color: #0d1633; border-color: var(--line);
+}
+.calc-bar .bar-input {
+  flex: 1; min-width: 210px; min-height: 44px; padding: .55rem .85rem;
+  font: 700 1.05rem var(--font-mono); color: var(--text-primary);
+  background: var(--bg-secondary); border: 2px solid var(--line); border-radius: 10px;
+}
+.calc-bar .bar-input:focus {
+  outline: none; background: var(--bg-card);
+  box-shadow: 0 0 0 4px var(--hl-soft);
+}
+.calc-bar .bar-result {
+  min-width: 150px; min-height: 44px; padding: .5rem .8rem;
+  display: flex; align-items: center; justify-content: flex-end;
+  font: 700 1.25rem var(--font-mono);
+  color: var(--lcd-fg, var(--text-primary));
+  background: var(--lcd-bg, var(--bg-secondary));
+  border: 2px solid var(--line); border-radius: 10px;
+  direction: ltr; text-align: left;
+  overflow: hidden; white-space: nowrap;
+}
+.calc-bar .bar-result.is-error {
+  color: var(--accent-danger); font-size: 1rem;
+}
+@media (max-width: 640px) {
+  .calc-bar .bar-result { min-width: 100%; width: 100%; }
+  .calc-bar .bar-input { min-width: 70%; }
+}
+/* شريط الأشكال الهندسية: زرّي (بدون بطاقة) */
+.calc-bar.shape-bar {
+  border: 0; background: transparent; box-shadow: none; padding: 0; border-radius: 0;
+}
+.shape-bar { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin-bottom: 1.4rem; }
+.shape-bar .geo-tab { display: inline-flex; align-items: center; gap: .35rem; }
+
+/* ── رأس اللوحة + جسمها (أنظمة/هندسة) ── */
+.panel-bar {
+  flex: none; display: flex; align-items: center; justify-content: space-between;
+  gap: .75rem; padding: .85rem .9rem .75rem;
+  background: var(--bg-secondary); border-bottom: 2px solid var(--line);
+}
+.panel-bar b { font-size: .95rem; font-weight: 800; }
+.panel-bar > span { font-size: .74rem; color: var(--text-muted); font-weight: 600; }
+.panel-bar .num-info { margin: 0; font-size: .74rem; }
+.panel-body { padding: 1rem .9rem 1.2rem; }
+
+/* ── حالة النتيجة الفارغة ── */
+.res-empty {
+  color: var(--text-muted); text-align: center; font-size: .9rem; line-height: 1.8;
+  padding: 2rem 1rem; margin: 0;
+  border: 2px dashed var(--border); border-radius: 12px;
+}
+.res-empty:empty { display: none; }
+
+/* ── أمثلة سريعة (الأنظمة الرقمية) ── */
+.ex-grid { display: flex; flex-wrap: wrap; gap: .5rem; }
+.ex-chip {
+  display: inline-flex; flex-direction: column; align-items: center; gap: .1rem;
+  padding: .4rem .7rem; cursor: pointer;
+  font: 700 .85rem var(--font-mono); direction: ltr; color: var(--text-primary);
+  background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 10px;
+  box-shadow: 1.5px 1.5px 0 var(--shadow-ink);
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+.ex-chip:hover { border-color: var(--line); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--shadow-ink); }
+.ex-chip small { font-size: .62rem; color: var(--text-muted); }
+
+/* ── إظهار/إخفاء قوائم العمليات حسب التبويب ── */
+.ops-list[hidden] { display: none; }
+
+/* ── نتائج الهندسة (تبويبات النتائج) ── */
+.geo-res { display: none; }
+.geo-res.active { display: block; animation: fade-up .3s ease; }

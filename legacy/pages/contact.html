@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="تواصل معي: اقتراحات أو ملاحظات أو أخطاء في حاسباتي، أو فرص تعاون." />
+  <meta name="theme-color" content="#070a12" />
+  <title data-en="Contact — Hasibati">تواصل — حاسباتي</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/theme.css" />
+  <script src="../js/theme.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main" data-en="Skip to content">تخطي إلى المحتوى</a>
+  <div id="site-nav"></div>
+
+  <main id="main" class="page-wrapper page-enter">
+    <div class="section ct-wrap">
+
+      <header class="page-head">
+        <div class="hero-badge" data-en="✉️ Contact">✉️ تواصل</div>
+        <h1 class="section-title" data-en="Get in touch">لنتواصل</h1>
+        <p class="section-sub" data-en="Found a bug, have an idea, or want to collaborate? I'd love to hear from you.">وجدت خطأً أو لديك فكرة أو ترغب في التعاون؟ يسعدني أن أسمع منك.</p>
+      </header>
+
+      <!-- قنوات التواصل (تُملأ تلقائياً من site-config.js) -->
+      <div id="contact-info-list" class="ct-info"></div>
+      <div id="contact-empty" class="contact-empty ct-empty" data-en="Contact details haven't been added yet. Fill in <code>site-config.js</code> and they will appear here automatically.">
+        لم تُضَف بيانات التواصل بعد. عبّئ ملف <code>site-config.js</code> وستظهر هنا تلقائياً.
+      </div>
+
+      <div class="ct-grid">
+
+        <!-- النموذج -->
+        <section class="ct-card" aria-labelledby="ct-form-h">
+          <h2 id="ct-form-h" class="ct-h" data-en="✍️ Send a message">✍️ أرسل رسالة</h2>
+          <form id="contact-form" novalidate>
+            <div class="field-row ct-two">
+              <div class="input-group">
+                <label for="contact-name" data-en="Full name">الاسم الكامل</label>
+                <input type="text" id="contact-name" placeholder="أدخل اسمك" data-en-ph="Enter your name" autocomplete="name" required />
+              </div>
+              <div class="input-group">
+                <label for="contact-email" data-en="Your email">بريدك الإلكتروني</label>
+                <input type="email" id="contact-email" placeholder="example@email.com" data-en-ph="example@email.com" autocomplete="email" style="direction:ltr; text-align:left;" required />
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="contact-msg" data-en="Message">الرسالة</label>
+              <textarea id="contact-msg" rows="6" placeholder="اكتب رسالتك هنا..." data-en-ph="Write your message here..." required></textarea>
+            </div>
+            <button type="submit" class="btn-primary" data-en="Send message">إرسال الرسالة</button>
+            <div id="form-status" class="form-status" role="status" aria-live="polite"></div>
+          </form>
+        </section>
+
+        <!-- الجانب -->
+        <aside class="ct-side">
+          <section class="ct-card" aria-labelledby="ct-why-h">
+            <h2 id="ct-why-h" class="ct-h" data-en="💬 What can you write?">💬 ماذا يمكنك أن تكتب؟</h2>
+            <ul class="ct-topics">
+              <li><span aria-hidden="true">🐞</span><span data-en="Report a bug or a wrong result">الإبلاغ عن خطأ أو نتيجة غير صحيحة</span></li>
+              <li><span aria-hidden="true">💡</span><span data-en="Suggest a new tool or feature">اقتراح أداة أو ميزة جديدة</span></li>
+              <li><span aria-hidden="true">🤝</span><span data-en="Collaboration opportunities">فرص التعاون</span></li>
+            </ul>
+          </section>
+
+          <section class="ct-card" aria-labelledby="ct-faq-h">
+            <h2 id="ct-faq-h" class="ct-h" data-en="❓ Quick answers">❓ إجابات سريعة</h2>
+            <details class="ct-faq"><summary data-en="Is it free?">هل هو مجاني؟</summary><p data-en="Yes, completely.">نعم، بالكامل.</p></details>
+            <details class="ct-faq"><summary data-en="Do the tools need an account?">هل تحتاج الأدوات حساباً؟</summary><p data-en="No. Accounts are optional.">لا، الحساب اختياري.</p></details>
+            <details class="ct-faq"><summary data-en="Is my input sent anywhere?">هل يُرسَل ما أكتبه إلى أي مكان؟</summary><p data-en="No — calculations run in your browser.">لا — الحسابات تجري في متصفحك.</p></details>
+            <details class="ct-faq"><summary data-en="Does it work offline?">هل تعمل دون إنترنت؟</summary><p data-en="The tools work, but fonts are loaded from Google Fonts.">تعمل الأدوات، لكن الخطوط تُحمَّل من Google Fonts.</p></details>
+          </section>
+        </aside>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../js/site-config.js"></script>
+
+  <script src="../js/layout.js"></script>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/cloud.js"></script>
+
+</body>
+</html>

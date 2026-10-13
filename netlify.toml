@@ -1,0 +1,26 @@
+# Netlify — نشر ثابت جاهز للضغط (sهاست مجاني)
+# يستخدم: اربط المستودع على Netlify وسيقرأ هذا الملف تلقائيًا.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# احتياط: نستخدم hash history فلا حاجة فعلية، لكنه يؤمّن أي مسار مباشر
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# تخزين مؤقت طويل لملفات الأصول المُبصّمة
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"

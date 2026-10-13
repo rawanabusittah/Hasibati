@@ -1,0 +1,168 @@
+/* ============================================================
+   theme.css — عناصر مشتركة: زر الوضع، شريط التقدّم، التذييل، صفحة التواصل
+   كل الألوان من المتغيّرات المعرّفة في design.css، فلا حاجة لتجاوزات لكل وضع.
+   ============================================================ */
+
+:root { --nav-h: 68px; }
+@media (max-width: 860px) { :root { --nav-h: 62px; } }
+
+/* ── زر الوضع الليلي/النهاري ── */
+.theme-toggle {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bg-card); border: 1.5px solid var(--line);
+  font-size: 1rem; line-height: 1; cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+}
+.theme-toggle:hover { background: var(--hl); }
+html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
+  transition: background-color .3s ease, color .3s ease, border-color .3s ease !important;
+}
+
+/* ── شريط تقدّم التمرير ── */
+#scroll-progress {
+  position: fixed; top: 0; inset-inline-start: 0; height: 3px; width: 0;
+  background: var(--accent-4); z-index: 200; pointer-events: none;
+}
+
+/* ── التذييل ── */
+footer.site-footer {
+  margin-top: 0.5rem; padding: 0.7rem clamp(1rem, 4vw, 2.5rem) 0.6rem;
+  text-align: start; font-size: 0.85rem;
+  background: var(--bg-secondary);
+  border-top: 1.5px solid var(--line);
+}
+.ft-row {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.8rem 1.4rem; flex-wrap: wrap;
+}
+.ft-brand { display: inline-flex; align-items: center; gap: 0.55rem; font-weight: 800; font-size: 1.05rem; color: var(--text-primary); text-decoration: none; }
+.ft-brand .ic {
+  width: 30px; height: 30px; border-radius: 8px; background: var(--hl); color: #0d1633;
+  border: 1.5px solid var(--line); display: inline-grid; place-items: center;
+  font-family: var(--font-mono); font-weight: 700; font-size: 1rem;
+}
+.ft-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.2rem; }
+.ft-links a {
+  padding: 0.28rem 0.65rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700;
+  color: var(--text-secondary); text-decoration: none;
+}
+.ft-links a:hover { color: var(--text-primary); background: var(--hl-soft); }
+.ft-ext { display: flex; gap: 0.4rem; }
+.ft-ext a {
+  min-width: 34px; height: 34px; padding: 0 0.4rem; border-radius: 8px;
+  display: inline-grid; place-items: center; font-size: 0.75rem; font-weight: 800; direction: ltr;
+  color: var(--text-secondary); text-decoration: none; border: 1.5px solid var(--line);
+}
+.ft-ext a:hover { background: var(--hl); color: #0d1633; }
+.ft-bottom {
+  max-width: 1100px; margin: 0.4rem auto 0; padding-top: 0.4rem; border-top: 1px dashed var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; flex-wrap: wrap;
+  font-size: 0.78rem; color: var(--text-muted);
+}
+.ft-top {
+  width: 30px; height: 30px; border-radius: 8px; display: inline-grid; place-items: center;
+  border: 1.5px solid var(--line); color: var(--text-primary); text-decoration: none; font-weight: 800;
+}
+.ft-top:hover { background: var(--hl); color: #0d1633; }
+@media (max-width: 700px) {
+  .ft-row { flex-direction: column; text-align: center; }
+  .ft-bottom { justify-content: center; text-align: center; }
+  .ft-note { display: none; }
+}
+
+/* ── صفحة التواصل ── */
+.ct-wrap { max-width: 960px; }
+
+/* ترويسة */
+.ct-wrap .page-head { margin-bottom: 1.9rem; }
+.ct-wrap .section-title { margin-bottom: 0.4rem; }
+.contact-empty.ct-empty { display: block; margin-bottom: 1.6rem; text-align: center; }
+
+/* الشبكة الرئيسية: صندوق البريد + الأسئلة الشائعة */
+.ct-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.75rem; align-items: start; }
+.ct-side { display: flex; flex-direction: column; }
+.ct-card {
+  background: var(--bg-card); border: 2px solid var(--line); border-radius: var(--radius-lg);
+  padding: 1.6rem 1.5rem 1.5rem; position: relative;
+  box-shadow: 4px 4px 0 var(--shadow-ink);
+}
+.ct-card::before {
+  content: ''; position: absolute; top: 0; inset-inline: 0; height: 7px;
+  background: var(--hl); border-bottom: 2px solid var(--line);
+  border-radius: calc(var(--radius-lg) - 2px) calc(var(--radius-lg) - 2px) 0 0;
+}
+.ct-h { font-size: 1.05rem; font-weight: 800; margin: 0 0 1rem; padding-inline-start: 0.75rem; border-inline-start: 4px solid var(--accent); }
+
+/* صندوق البريد: خلفية دفتر مسطّر مثل «جرّب» في الواجهة الرئيسية */
+.ct-card.ct-mailbox {
+  background-color: var(--bg-card);
+  /* أسطر دفتر منتظمة (كل 36px) تبدأ بعد كتلة العنوان ليظل الجزء العلوي نظيفاً */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 35px,
+    color-mix(in srgb, var(--border) 75%, transparent) 35px 36px
+  );
+  background-position: 0 4.5rem;
+  border: 2px solid var(--line); border-radius: 14px;
+  box-shadow: 6px 6px 0 var(--shadow-ink);
+}
+.ct-card.ct-mailbox::before { display: none; }
+.ct-card.ct-mailbox::after { /* هامش الدفتر الأحمر */
+  content: ''; position: absolute; inset-block: 0; inset-inline-start: 1.1rem; width: 2px;
+  background: color-mix(in srgb, var(--accent-4) 55%, transparent);
+  pointer-events: none;
+}
+/* حقول شفافة جزئياً لتستمر الأسطر خلفها وتظهر الورقة موحّدة ومنتظمة */
+.ct-mailbox .input-group input,
+.ct-mailbox .input-group textarea {
+  background-color: color-mix(in srgb, var(--bg-card) 80%, transparent);
+}
+.ct-mailbox .input-group input:focus,
+.ct-mailbox .input-group textarea:focus { background-color: var(--bg-card); }
+.ct-mailbox .ct-rings { /* حلقات الدفتر مثل «جرّب» */
+  position: absolute; top: -14px; inset-inline: 1.2rem;
+  display: flex; justify-content: space-between; z-index: 2;
+}
+.ct-mailbox .ct-rings i {
+  width: 12px; height: 26px; border-radius: 6px;
+  background: var(--bg-primary); border: 2px solid var(--line);
+}
+
+/* النموذج */
+.ct-card .ct-two { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; }
+.ct-card form .input-group { margin-bottom: 1rem; }
+.ct-card form .input-group label { font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.35rem; }
+.ct-card form .input-group input,
+.ct-card form .input-group textarea { min-height: 48px; padding-block: 0.55rem 0.6rem; }
+.ct-card form .input-group textarea { line-height: 1.55; }
+.ct-card form .btn-primary { width: 100%; min-height: 48px; }
+.req { color: var(--accent-danger); margin-inline-start: 0.2rem; font-weight: 800; }
+.ct-mail-line { margin: 1rem 0 0; display: flex; justify-content: center; }
+.ct-mail-line .ct-mail {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  padding: 0.35rem 0.9rem; border: 1.5px solid var(--line); border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-primary) 60%, transparent);
+  font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700;
+  direction: ltr; letter-spacing: 0;
+}
+.ct-mail { color: var(--accent); font-weight: 800; text-decoration: none; overflow-wrap: anywhere; }
+.ct-mail:hover { text-decoration: underline; }
+
+/* الأسئلة الشائعة: قائمة أكورديون واضحة */
+.ct-faq { border-bottom: 1px dashed var(--border); margin: 0; }
+.ct-faq:last-child { border-bottom: none; }
+.ct-faq summary {
+  cursor: pointer; list-style: none; font-weight: 700; font-size: 0.92rem; padding: 0.6rem 0;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; color: var(--text-primary);
+  transition: color var(--transition);
+}
+.ct-faq summary:hover { color: var(--accent); }
+.ct-faq summary::-webkit-details-marker { display: none; }
+.ct-faq summary::after { content: '+'; font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--text-muted); transition: transform var(--transition), color var(--transition); }
+.ct-faq[open] summary::after { transform: rotate(45deg); color: var(--accent); }
+.ct-faq p { font-size: 0.86rem; color: var(--text-secondary); padding: 0 0 0.65rem; line-height: 1.7; margin: 0; }
+
+@media (max-width: 800px) {
+  .ct-grid { grid-template-columns: 1fr; }
+}

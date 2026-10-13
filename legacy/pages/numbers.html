@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="محوّل الأنظمة الرقمية: ثنائي، ثماني، عشري وسداسي عشر بدقة كاملة لأي حجم، مع الكسور والأعداد السالبة ونسخ النتائج." />
+  <meta name="theme-color" content="#070a12" />
+  <title data-en="Number Systems Converter — Hasibati">تحويل الأنظمة الرقمية — حاسباتي</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/calc-ops.css" />
+  <script src="../js/theme.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* شريط الإدخال: بعد إخفاء القائمة المنسدلة يبقى الحقل + زر التحويل */
+    .num-page .num-bar { grid-template-columns: minmax(0, 1fr) auto; margin-bottom: 1rem; }
+    .num-page .num-bar .bar-select { display: none; }
+    @media (max-width: 640px) {
+      .num-page .num-bar { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "input btn"; }
+    }
+
+    /* شريط اختيار نوع التحويل (ثابت تحت الإدخال) */
+    .type-bar-wrap { max-width: 1180px; margin: 0 auto 1.2rem; }
+    .type-bar-label { font-size: .85rem; font-weight: 800; margin: 0 0 .5rem .2rem; color: var(--text-secondary); }
+    .type-bar {
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem;
+    }
+    .type-btn {
+      --c: var(--accent);
+      display: flex; align-items: center; justify-content: space-between; gap: .6rem; min-height: 54px;
+      padding: .5rem .9rem; cursor: pointer; text-align: start;
+      font: 800 .92rem var(--font-main); color: var(--text-primary);
+      background: var(--bg-card); border: 2px solid var(--line); border-top: 5px solid var(--c);
+      border-radius: 12px; box-shadow: 2px 2px 0 var(--shadow-ink);
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+    .type-btn[data-base="2"]  { --c: var(--accent); }
+    .type-btn[data-base="8"]  { --c: var(--accent-2); }
+    .type-btn[data-base="10"] { --c: var(--accent-3); }
+    .type-btn[data-base="16"] { --c: var(--accent-4); }
+    .type-btn small {
+      font: 700 .72rem var(--font-mono); direction: ltr; padding: .1rem .45rem; border-radius: 6px;
+      background: color-mix(in srgb, var(--c) 18%, transparent);
+    }
+    .type-btn:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--shadow-ink); }
+    .type-btn:active { transform: translate(2px, 2px); box-shadow: none; }
+    .type-btn[aria-checked="true"] {
+      background: var(--hl); color: #0d1633; box-shadow: 4px 4px 0 var(--shadow-ink);
+    }
+    .type-btn[aria-checked="true"] small { background: #fff; }
+    @media (max-width: 760px) { .type-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+    .num-page .page-head { margin-bottom: 1.2rem; }
+    .num-page .bar-error { margin: -.2rem auto .9rem; }
+  </style>
+</head>
+<body>
+
+  <a class="skip-link" href="#main" data-en="Skip to content">تخطي إلى المحتوى</a>
+  <div id="site-nav"></div>
+
+  <main id="main" class="page-wrapper page-enter">
+    <div class="section tool-page num-page" style="max-width: 1180px">
+
+      <!-- ════ العنوان ════ -->
+      <header class="page-head">
+        <h1 class="section-title" data-en="Number Systems Converter">تحويل الأنظمة الرقمية</h1>
+        <p class="section-sub" data-en="Type a value in any system and see it in all four — exact, even for huge numbers and fractions.">اكتب قيمة في أي نظام لتراها في الأنظمة الأربعة — بدقة كاملة حتى مع الأعداد الضخمة والكسور.</p>
+      </header>
+
+      <!-- ════ شريط الإدخال ════ -->
+      <div class="calc-bar num-bar" role="group" aria-label="إدخال القيمة" data-en-aria="Value input">
+        <!-- يبقى موجوداً لأن main.js يقرأ منه النظام الأصلي؛ يتحكم به الشريط أدناه -->
+        <select id="from-base" class="bar-select" aria-label="النظام الأصلي" data-en-aria="Source system" tabindex="-1">
+          <option value="10" selected data-en="Decimal">عشري (Dec)</option>
+          <option value="2" data-en="Binary">ثنائي (Bin)</option>
+          <option value="8" data-en="Octal">ثماني (Oct)</option>
+          <option value="16" data-en="Hexadecimal">سداسي عشر (Hex)</option>
+        </select>
+        <input type="text" id="num-input" class="bar-input num-input" placeholder="255  /  -12.5  /  0xFF"
+               autocomplete="off" spellcheck="false" inputmode="text" dir="ltr" enterkeyhint="done"
+               aria-label="القيمة" data-en-aria="Value" aria-describedby="num-error" aria-invalid="false" />
+        <button type="button" class="bar-btn" data-convert-num data-en="Convert ⇄">تحويل ⇄</button>
+      </div>
+
+      <!-- ════ شريط اختيار نوع التحويل (ثابت) ════ -->
+      <div class="type-bar-wrap">
+        <p class="type-bar-label" id="type-bar-h" data-en="Convert from:">حوّل من نظام:</p>
+        <div class="type-bar" id="type-bar" role="radiogroup" aria-labelledby="type-bar-h">
+          <button type="button" class="type-btn" role="radio" aria-checked="false" data-base="10">
+            <span data-en="Decimal">عشري</span><small>DEC · 10</small>
+          </button>
+          <button type="button" class="type-btn" role="radio" aria-checked="false" data-base="2">
+            <span data-en="Binary">ثنائي</span><small>BIN · 2</small>
+          </button>
+          <button type="button" class="type-btn" role="radio" aria-checked="false" data-base="8">
+            <span data-en="Octal">ثماني</span><small>OCT · 8</small>
+          </button>
+          <button type="button" class="type-btn" role="radio" aria-checked="false" data-base="16">
+            <span data-en="Hexadecimal">سداسي عشر</span><small>HEX · 16</small>
+          </button>
+        </div>
+      </div>
+
+      <div id="num-error" class="error-msg bar-error" role="alert" aria-live="polite"></div>
+
+      <div class="calc-layout calc-layout--ops">
+
+        <!-- ════ النتائج ════ -->
+        <div class="ops-col">
+          <section class="ops" aria-labelledby="res-h">
+            <div class="panel-bar">
+              <b id="res-h" data-en="Results in all systems">النتائج في كل الأنظمة</b>
+              <span id="num-info" class="num-info" aria-live="polite"></span>
+            </div>
+            <div class="panel-body">
+              <div id="num-results" class="num-results res-list" role="status" aria-live="polite" style="display:none;"></div>
+              <p class="res-empty" data-en="Enter a value above and the four conversions appear here, live.">أدخل قيمة في الشريط بالأعلى وستظهر التحويلات الأربعة هنا مباشرة.</p>
+            </div>
+          </section>
+        </div>
+
+        <!-- ════ أمثلة ومراجع (قوائم منسدلة) ════ -->
+        <div class="calc-side">
+          <section class="ops" aria-labelledby="ref-h">
+            <div class="panel-bar"><b id="ref-h" data-en="Examples & reference">أمثلة ومراجع</b></div>
+            <div class="ops-body">
+              <div class="ops-list">
+
+                <details class="ops-item" open>
+                  <summary class="ops-head">
+                    <span class="ops-name" data-en="Quick examples">أمثلة سريعة</span>
+                    <span class="ops-chev" aria-hidden="true">▼</span>
+                  </summary>
+                  <div class="ops-panel">
+                    <div class="ex-grid">
+                      <button type="button" class="ex-chip" data-example="255" data-base="10">255 <small>Dec</small></button>
+                      <button type="button" class="ex-chip" data-example="11111111" data-base="2">11111111 <small>Bin</small></button>
+                      <button type="button" class="ex-chip" data-example="FF" data-base="16">FF <small>Hex</small></button>
+                      <button type="button" class="ex-chip" data-example="-42" data-base="10">-42 <small>Dec</small></button>
+                      <button type="button" class="ex-chip" data-example="0.1" data-base="10">0.1 <small>Dec</small></button>
+                      <button type="button" class="ex-chip" data-example="123456789012345678901234567890" data-base="10">123456…890 <small>30 <span data-en="digits">خانة</span></small></button>
+                    </div>
+                  </div>
+                </details>
+
+                <details class="ops-item">
+                  <summary class="ops-head">
+                    <span class="ops-name" data-en="The four systems">الأنظمة الأربعة</span>
+                    <span class="ops-chev" aria-hidden="true">▼</span>
+                  </summary>
+                  <div class="ops-panel">
+                    <div class="base-legend">
+                      <div class="b2"><b>Binary</b><span data-en="Digits 0, 1 only">أرقام 0, 1 فقط</span></div>
+                      <div class="b8"><b>Octal</b><span data-en="Digits 0–7">أرقام 0–7</span></div>
+                      <div class="b10"><b>Decimal</b><span data-en="Digits 0–9">أرقام 0–9</span></div>
+                      <div class="b16"><b>Hexadecimal</b><span data-en="0–9, A–F">0–9، A–F</span></div>
+                    </div>
+                  </div>
+                </details>
+
+                <details class="ops-item">
+                  <summary class="ops-head">
+                    <span class="ops-name" data-en="What the field accepts">ما الذي يقبله الحقل؟</span>
+                    <span class="ops-chev" aria-hidden="true">▼</span>
+                  </summary>
+                  <div class="ops-panel">
+                    <p class="ops-desc" data-en="Negative numbers, fractions, prefixes (0x, 0b, 0o) and spaces are all accepted.">يقبل الأعداد السالبة والكسور والبادئات (‎0x ‎0b ‎0o) والمسافات.</p>
+                  </div>
+                </details>
+
+                <details class="ops-item">
+                  <summary class="ops-head">
+                    <span class="ops-name" data-en="Why 0.1 isn't exact in binary">لماذا لا يكون 0.1 دقيقاً في الثنائي؟</span>
+                    <span class="ops-chev" aria-hidden="true">▼</span>
+                  </summary>
+                  <div class="ops-panel">
+                    <p class="ops-desc" data-en="0.1 repeats forever as 0.000110011…, so fractions are truncated to 20 digits — the page tells you when that happens.">لأنه يتكرر بلا نهاية (0.000110011…)، لذا تُقتطع الكسور عند 20 خانة، وتُعلمك الصفحة عندما يحدث ذلك.</p>
+                  </div>
+                </details>
+
+              </div>
+            </div>
+          </section>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="saved-history"></div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../js/site-config.js"></script>
+
+  <script src="../js/layout.js"></script>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/core.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/cloud.js"></script>
+
+  <script>
+    // شريط نوع التحويل: يتحكم بقائمة النظام الأصلي (#from-base) التي يعتمد عليها main.js
+    (() => {
+      const sel = document.getElementById('from-base');
+      const bar = document.getElementById('type-bar');
+      if (!sel || !bar) return;
+      const btns = [...bar.querySelectorAll('.type-btn')];
+
+      function sync() {
+        btns.forEach(b => {
+          const on = b.dataset.base === sel.value;
+          b.setAttribute('aria-checked', String(on));
+          b.tabIndex = on ? 0 : -1;
+        });
+      }
+      function choose(b, focus) {
+        sel.value = b.dataset.base;
+        sel.dispatchEvent(new Event('change', { bubbles: true })); // يحدّث التحويل الحيّ
+        sync();
+        if (focus) b.focus();
+      }
+
+      btns.forEach((b, i) => {
+        b.addEventListener('click', () => choose(b));
+        b.addEventListener('keydown', e => {
+          if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+          e.preventDefault();
+          const rtl = document.documentElement.dir === 'rtl';
+          const fwd = (e.key === 'ArrowRight') === rtl ? -1 : 1;
+          const step = e.key === 'ArrowUp' ? -1 : e.key === 'ArrowDown' ? 1 : fwd;
+          choose(btns[(i + step + btns.length) % btns.length], true);
+        });
+      });
+
+      // الأمثلة السريعة تغيّر القائمة برمجياً دون حدث change، لذا نزامن بعد أي نقرة
+      document.addEventListener('click', () => setTimeout(sync, 0));
+      sel.addEventListener('change', sync);
+      sync();
+    })();
+  </script>
+</body>
+</html>

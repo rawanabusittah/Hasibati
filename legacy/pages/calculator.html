@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="آلة حاسبة علمية عربية مجانية: معاينة حيّة، نسبة مئوية صحيحة، دوال مثلثية ولوغاريتمية، مضروب، سجل عمليات، ودعم كامل للوحة المفاتيح."
+    />
+    <meta name="theme-color" content="#070a12" />
+    <title data-en="Scientific Calculator — Hasibati">
+      الآلة الحاسبة العلمية — حاسباتي
+    </title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/calc-ops.css" />
+
+    <script src="../js/theme.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+
+    <a class="skip-link" href="#main" data-en="Skip to content"
+      >تخطي إلى المحتوى</a
+    >
+    <div id="site-nav"></div>
+
+    <main id="main" class="page-wrapper">
+      <div class="section calc-page" style="max-width: 1180px">
+        <!-- ════ العنوان (في المنتصف) ════ -->
+        <header class="page-head">
+          <h1 class="section-title" data-en="Scientific Calculator">
+            الآلة الحاسبة العلمية
+          </h1>
+          <p
+            class="section-sub"
+            data-en="Type an expression below, or pick an operation and try its example on the keypad."
+          >
+            اكتب عمليتك في الشريط، أو اختر عملية وجرّب مثالها على لوحة الأرقام.
+          </p>
+        </header>
+
+        <!-- ════ شريط إدخال العملية + النتيجة ════ -->
+        <div
+          class="calc-bar"
+          role="group"
+          aria-label="إدخال العملية"
+          data-en-aria="Expression input"
+        >
+          <button
+            type="button"
+            class="bar-btn bar-mode"
+            data-calc="mode"
+            aria-pressed="false"
+            aria-label="وحدة الزوايا: درجات / راديان"
+            data-en-aria="Angle unit: degrees / radians"
+          >
+            DEG
+          </button>
+          <input
+            id="calc-expr"
+            class="bar-input"
+            type="text"
+            dir="ltr"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            enterkeyhint="done"
+            placeholder=" 2π × sin(30) + 5!"
+            data-en-ph="e.g. 2π × sin(30) + 5!"
+            aria-label="العملية الحسابية"
+            data-en-aria="Expression"
+          />
+          <div
+            class="calc-result bar-result"
+            id="calc-result"
+            role="status"
+            aria-live="polite"
+            aria-label="النتيجة"
+            data-en-aria="Result"
+          >
+            0
+          </div>
+          <button type="button" class="bar-btn" data-calc="copy" data-en="Copy">
+            نسخ
+          </button>
+        </div>
+
+        <div class="calc-layout calc-layout--ops">
+          <!-- ════ العمليات (قائمة ثابتة) ════ -->
+          <div class="ops-col">
+            <section class="ops" aria-labelledby="ops-h">
+              <div
+                class="ops-tabs"
+                role="tablist"
+                aria-label="أقسام العمليات"
+                data-en-aria="Operation categories"
+              >
+                <button
+                  type="button"
+                  class="ops-tab"
+                  role="tab"
+                  aria-selected="false"
+                  data-ops-tab="arith"
+                >
+                  <span aria-hidden="true">➕</span>
+                  <span data-en="Arithmetic">حسابية</span>
+                </button>
+                <button
+                  type="button"
+                  class="ops-tab"
+                  role="tab"
+                  aria-selected="false"
+                  data-ops-tab="power"
+                >
+                  <span aria-hidden="true">√</span>
+                  <span data-en="Powers & roots">أسس وجذور</span>
+                </button>
+                <button
+                  type="button"
+                  class="ops-tab"
+                  role="tab"
+                  aria-selected="false"
+                  data-ops-tab="trig"
+                >
+                  <span aria-hidden="true">📐</span>
+                  <span data-en="Trigonometry">مثلثات</span>
+                </button>
+                <button
+                  type="button"
+                  class="ops-tab"
+                  role="tab"
+                  aria-selected="false"
+                  data-ops-tab="log"
+                >
+                  <span aria-hidden="true">ln</span>
+                  <span data-en="Logarithms">لوغاريتمات</span>
+                </button>
+                <button
+                  type="button"
+                  class="ops-tab"
+                  role="tab"
+                  aria-selected="false"
+                  data-ops-tab="calculus"
+                >
+                  <span aria-hidden="true">∫</span>
+                  <span data-en="Calculus">تفاضل وتكامل</span>
+                </button>
+                <button
+                  type="button"
+                  class="ops-tab"
+                  role="tab"
+                  aria-selected="false"
+                  data-ops-tab="combo"
+                >
+                  <span aria-hidden="true">🎲</span>
+                  <span data-en="Stats & combinatorics">إحصاء وتوافيق</span>
+                </button>
+                <button
+                  type="button"
+                  class="ops-tab"
+                  role="tab"
+                  aria-selected="false"
+                  data-ops-tab="history"
+                >
+                  <span aria-hidden="true">🕘</span>
+                  <span data-en="History">السجل</span>
+                </button>
+              </div>
+
+              <div
+                class="ops-body"
+                role="tabpanel"
+                aria-label="العمليات المتاحة"
+                data-en-aria="Available operations"
+              >
+                <p class="ops-note" id="ops-note" hidden></p>
+                <div class="ops-list" id="ops-grid"></div>
+                <div class="ops-history" id="ops-history" hidden>
+                  <div class="history-head">
+                    <h2 id="hist-h" data-en="History">السجل</h2>
+                    <button
+                      type="button"
+                      class="history-clear"
+                      data-calc="clear-history"
+                      data-en="Clear"
+                    >
+                      مسح
+                    </button>
+                  </div>
+                  <ul class="history-list" id="calc-history"></ul>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- ════ لوحة الأرقام (ثابتة بجانب العمليات) ════ -->
+          <div class="calc-side">
+            <div class="calc-wrapper">
+              <div
+                class="calc-buttons"
+                role="group"
+                aria-label="لوحة الأرقام"
+                data-en-aria="Number pad"
+              >
+                <button
+                  type="button"
+                  class="calc-btn clear"
+                  data-calc="clear"
+                  aria-label="مسح الكل"
+                  data-en-aria="Clear all"
+                >
+                  AC
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn fn"
+                  data-calc="back"
+                  aria-label="مسح آخر حرف"
+                  data-en-aria="Backspace"
+                >
+                  ⌫
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn fn"
+                  data-calc="append"
+                  data-val="("
+                  aria-label="قوس فتح"
+                  data-en-aria="Open parenthesis"
+                >
+                  (
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn fn"
+                  data-calc="append"
+                  data-val=")"
+                  aria-label="قوس إغلاق"
+                  data-en-aria="Close parenthesis"
+                >
+                  )
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn"
+                  data-calc="append"
+                  data-val="7"
+                >
+                  7
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn"
+                  data-calc="append"
+                  data-val="8"
+                >
+                  8
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn"
+                  data-calc="append"
+                  data-val="9"
+                >
+                  9
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn op"
+                  data-calc="append"
+                  data-val="÷"
+                  aria-label="قسمة"
+                  data-en-aria="Divide"
+                >
+                  ÷
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn"
+                  data-calc="append"
+                  data-val="4"
+                >
+                  4
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn"
+                  data-calc="append"
+                  data-val="5"
+                >
+                  5
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn"
+                  data-calc="append"
+                  data-val="6"
+                >
+                  6
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn op"
+                  data-calc="append"
+                  data-val="×"
+                  aria-label="ضرب"
+                  data-en-aria="Multiply"
+                >
+                  ×
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn"
+                  data-calc="append"
+                  data-val="1"
+                >
+                  1
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn"
+                  data-calc="append"
+                  data-val="2"
+                >
+                  2
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn"
+                  data-calc="append"
+                  data-val="3"
+                >
+                  3
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn op"
+                  data-calc="append"
+                  data-val="-"
+                  aria-label="طرح"
+                  data-en-aria="Subtract"
+                >
+                  −
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn"
+                  data-calc="append"
+                  data-val="0"
+                >
+                  0
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn"
+                  data-calc="append"
+                  data-val="."
+                  aria-label="فاصلة عشرية"
+                  data-en-aria="Decimal point"
+                >
+                  .
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn fn"
+                  data-calc="fn"
+                  data-val="neg"
+                  aria-label="تغيير الإشارة"
+                  data-en-aria="Toggle sign"
+                >
+                  ±
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn op"
+                  data-calc="append"
+                  data-val="+"
+                  aria-label="جمع"
+                  data-en-aria="Add"
+                >
+                  +
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn fn"
+                  data-calc="append"
+                  data-val="x"
+                  aria-label="المتغير x للدوال"
+                  data-en-aria="The variable x for functions"
+                >
+                  x
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn fn"
+                  data-calc="fn"
+                  data-val="pi"
+                  aria-label="باي"
+                  data-en-aria="Pi"
+                >
+                  π
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn fn"
+                  data-calc="fn"
+                  data-val="e"
+                  aria-label="العدد النيبيري"
+                  data-en-aria="Euler's number"
+                >
+                  e
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn fn"
+                  data-calc="append"
+                  data-val=","
+                  aria-label="فاصلة بين الوسائط"
+                  data-en-aria="Argument separator"
+                >
+                  ,
+                </button>
+                <button
+                  type="button"
+                  class="calc-btn eq"
+                  data-calc="equals"
+                  aria-label="احسب النتيجة"
+                  data-en-aria="Calculate"
+                >
+                  =
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cheat-grid">
+          <div class="cheat">
+            <h3 data-en="Smart percent">النسبة المئوية الذكية</h3>
+            <p
+              data-en="<code>200+10%</code> adds 10% of 200 → 220. On its own, <code>50%</code> is 0.5."
+            >
+              ‎<code>200+10%</code> تضيف 10% من 200 فتصبح 220. وحدها، ‎<code
+                >50%</code
+              >
+              تساوي 0.5.
+            </p>
+          </div>
+          <div class="cheat">
+            <h3 data-en="Implicit multiplication">الضرب الضمني</h3>
+            <p
+              data-en="Write <code>2π</code>, <code>3(4+1)</code> or <code>2sin(30)</code> without typing ×."
+            >
+              اكتب ‎<code>2π</code> أو ‎<code>3(4+1)</code> أو ‎<code
+                >2sin(30)</code
+              >
+              دون الحاجة إلى ×.
+            </p>
+          </div>
+          <div class="cheat">
+            <h3 data-en="Calculus">التفاضل والتكامل</h3>
+            <p
+              data-en="Use <b>x</b> as the variable: <code>diff(x^2,3)</code> = 6 and <code>int(x^2,0,3)</code> = 9. Results are numeric."
+            >
+              استخدم <b>x</b> كمتغير: ‎<code>diff(x^2,3)</code> = 6 و ‎<code
+                >int(x^2,0,3)</code
+              >
+              = 9. النتائج عددية.
+            </p>
+          </div>
+          <div class="cheat">
+            <h3 data-en="Degrees or radians">درجات أم راديان</h3>
+            <p
+              data-en="Tap <b>DEG</b>/<b>RAD</b> beside the input bar to switch. Your choice is saved in this browser."
+            >
+              اضغط <b>DEG</b>/<b>RAD</b> بجانب شريط الإدخال للتبديل. يُحفظ
+              اختيارك في هذا المتصفح.
+            </p>
+          </div>
+          <div class="cheat">
+            <h3 data-en="Clear errors">أخطاء واضحة</h3>
+            <p
+              data-en="Dividing by zero, <code>tan(90)</code> or <code>log(0)</code> show a clear message instead of a wrong number."
+            >
+              القسمة على صفر أو ‎<code>tan(90)</code> أو ‎<code>log(0)</code>
+              تُظهر رسالة واضحة بدل رقم خاطئ.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div id="saved-history"></div>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="../js/site-config.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script src="../js/core.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cloud.js"></script>
+
+  </body>
+</html>

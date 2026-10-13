@@ -1,0 +1,20 @@
+# تطبيع نهايات الأسطر عبر الأنظمة
+* text=auto eol=lf
+
+# ملفات ثنائية صريحة
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
+
+# اللغات
+*.md text
+*.vue text
+*.js text
+*.css text
+*.html text
