@@ -1,69 +1,223 @@
-# حاسباتي — نسخة Vue 3 + Vite
+<div align="center">
 
-موقع حاسباتي: آلة حاسبة علمية، محوّل أنظمة رقمية، وأدوات هندسية — عربي/إنجليزي، ووضعان نهاري وليلي.
+# 🧮 حاسباتي — Hasibati
 
-تحويل كامل من HTML/CSS/JS كلاسيكي إلى **SPA بـ Vue 3 + Vue Router + ملفات SFC** مع بقاء التصميم والسلوك كما هو.
+**أدوات رياضية وعلمية عربية في المتصفّح — آلة حاسبة علمية، تحويل الأنظمة الرقمية، وحسّاب هندسي.**
+**Arabic-first scientific tools: a scientific calculator, a number‑system converter, and a geometry solver.**
 
-## 🚀 التشغيل
+[![Vue 3](https://img.shields.io/badge/Vue-3.x-42b883?logo=vuedotjs&logoColor=white)](https://vuejs.org)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
+[![Vitest](https://img.shields.io/badge/tested%20with-Vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev)
+[![Tests](https://img.shields.io/badge/tests-75%20passing-brightgreen)](#-الاختبارات--tests)
+[![i18n](https://img.shields.io/badge/i18n-AR%20%2F%20EN-blue)](#-الميزات--features)
+[![Supabase](https://img.shields.io/badge/Supabase-optional-3FCF8E?logo=supabase&logoColor=white)](#-supabase-اختياري)
+
+</div>
+
+---
+
+> **بالعربية:** حاسباتي مشروع واجهات حقيقية من اليمين إلى اليسار (RTL) بلغتين ووضعين ليلي ونهاري. بُني محرّك الحساب الرياضي **من الصفر بدون `eval`** (محلّل تنازلي تكراري)، ويعمل الموقع بالكامل دون إنترنت ودون إعلانات، وكل عملية تُحسب داخل متصفّح المستخدم.
+>
+> **In English:** A real RTL Arabic‑first web app with full bilingual support and light/dark themes. The math engine is **hand‑written with no `eval`** (a recursive‑descent parser). Everything runs in the browser — no ads, no tracking, no network required for calculations.
+
+---
+
+## 📸 لقطات الشاشة · Screenshots
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/01-home-ar-dark.png" alt="الصفحة الرئيسية — الوضع الليلي" /><br />
+      <sub><b>الصفحة الرئيسية</b> — عربي، الوضع الليلي</sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/02-home-en-light.png" alt="Home — light theme, English" /><br />
+      <sub><b>Home</b> — English, light theme</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/03-calculator.png" alt="الآلة الحاسبة العلمية" /><br />
+      <sub><b>الآلة الحاسبة</b> — معاينة حيّة + لوحة عمليات</sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/04-statistics.png" alt="تقرير إحصائي" /><br />
+      <sub><b>الإحصاء الوصفي</b> — تقرير كامل داخل نافذة الخطوات</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/05-complex-polar.png" alt="الأعداد المركبة — الصورة القطبية" /><br />
+      <sub><b>الأعداد المركبة</b> — الصورة القطبية r∠θ</sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/06-numbers.png" alt="محوّل الأنظمة الرقمية" /><br />
+      <sub><b>الأنظمة الرقمية</b> — دقة BigInt</sub>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="docs/screenshots/07-geometry.png" alt="حسّاب الأشكال الهندسية" /><br />
+      <sub><b>الهندسة</b> — المثلث يُحلّ من أضلاعه الثلاثة ويُصنَّف تلقائيًا (٣-٤-٥ → قائم، R=2.5)</sub>
+    </td>
+  </tr>
+</table>
+
+---
+
+## ✨ الميزات · Features
+
+### 🔬 الآلة الحاسبة العلمية
+- **محرّك رياضيات مكتوب يدويًا** (محلّل تنازلي تكراري) بلا `eval` — أمان ودقة أوّلية صحيحة.
+- المعاينة الحيّة، النسبة المئوية الذكية (`200+10% = 220`)، الضرب الضمني (`2π`، `3(4+1)`)، والدقة `0.1+0.2 = 0.3`.
+- مثلثية (درجات/راديان)، لوغاريتمات، جذور، مضروب، ثوابت π وe، تفاضل وتكامل ومجموع وجداء عدديًّا.
+- **لوحة عمليات مصنّفة** مع مثال وشرح لكل عملية، وسجلّ عمليات محفوظ، ودعم لوحة المفاتيح كاملة.
+
+### 🧩 عمليات متقدّمة (داخل نفس الآلة)
+- **المتراجحات الخطية** — حل بمتغيّر واحد مع الخطوات وقلب الإشارة عند القسمة على سالب.
+- **الأعداد المركبة** — تقييم، تحويل إلى الصورة القطبية، الزاوية (الوسيط)، و**إيجاد جميع الحلول المركبة** لمعادلات من الدرجة ≤2 أو الصيغة `xⁿ = k`.
+- **الإحصاء الوصفي** — المتوسط، الوسيط، المنوال، الانحراف المعياري (مجتمع/عينة)، التباين، المدى، **المدى الربيعي (H‑Spread)** و**منتصف المفصلات** والمتوسطات الهندسية والتوافقية، مع **تقرير إحصائي كامل**.
+
+### 🔢 محوّل الأنظمة الرقمية
+- ثنائي/ثماني/عشري/سداسي عشر بدقة **`BigInt`** (أعداد ضخمة بلا فقدان دقة)، مع السالب والكسور والبادئات `0x / 0b / 0o`.
+
+### 📐 حسّاب الأشكال الهندسية
+- الدائرة والمربع والمستطيل والمثلث والكرة — كل نتيجة **مع معادلتها**، وحلّ المثلث من أضلاعه (صيغة هيرون) مع التحقق والتصنيف.
+
+### 🌍 عام
+- **عربي/إنجليزي** تفاعلي (تغيّر اللغة فورًا) مع **RTL** أصيل، و**وضعان ليلي ونهاري**، وتصميم متجاوب.
+- **Supabase اختياري**: تسجيل ومزامنة وتخزين سحابي — يعمل الموقع كاملًا بصمت عند غياب الإعداد.
+
+---
+
+## 🛠️ التقنيات · Tech Stack
+
+| الطبقة | التقنية |
+|--------|---------|
+| الواجهة | Vue 3 (`<script setup>` + SFC) |
+| البناء | Vite 5 |
+| التوجيه | Vue Router 4 (hash history — يعمل على أي استضافة ثابتة) |
+| الاختبار | Vitest 2 |
+| الخلفية (اختياري) | Supabase (Auth + Postgres) |
+| الأنماط | CSS مخصّص (متغيّرات، ثيمات، RTL) — بلا إطار UI |
+
+**أبرز ما يبرزه المشروع:** محلّل تعبيرات مكتوب يدويًا، حساب عالي الدقة بـ `BigInt`، محرّك أعداد مركبة، حلّ خطوة بخطوة، نظام i18n تفاعلي، وطبقة سحابية اختيارية «خاملة بأمان».
+
+---
+
+## 📁 البنية · Project Structure
+
+```
+├── index.html                # نقطة الدخول (Vite)
+├── public/css/               # نظام التصميم (style, theme, calc-ops, components, design)
+├── src/
+│   ├── main.js               # إقلاع التطبيق
+│   ├── App.vue               # الشريط العلوي + الفوتر + <router-view>
+│   ├── router/index.js       # المسارات (hash history)
+│   ├── composables/          # i18n (عربي/إنجليزي) + theme (ليلي/نهاري)
+│   ├── services/             # auth + cloud + إعدادات الموقع (Supabase)
+│   ├── lib/
+│   │   ├── core.js           # MathEngine (محلّل تعبيرات) + BaseConv (BigInt)
+│   │   ├── steps.js          # محرّك خطوات الحل
+│   │   ├── ineq.js           # حلّ المتراجحات
+│   │   └── complex.js        # محرّك الأعداد المركبة
+│   ├── components/           # AppNav, AppFooter, SavedHistory, SheetSolver
+│   └── views/                # 10 صفحات (home/calculator/numbers/geometry/contact + auth/menu/services)
+├── tests/                    # اختبارات الوحدة (Vitest)
+├── supabase/                 # schema.sql + SETUP.md لقاعدة البيانات
+├── docs/screenshots/         # لقطات الشاشة
+├── netlify.toml              # إعداد نشر Netlify
+├── .github/workflows/deploy.yml  # نشر تلقائي على GitHub Pages
+└── legacy/                   # النسخة القديمة (HTML كلاسيكي) للرجوع إليها
+```
+
+### 🗺️ المسارات
+| المسار | الصفحة |
+|--------|--------|
+| `/` | الرئيسية (مع حاسبة تجريبية) |
+| `/calculator` | الآلة الحاسبة العلمية |
+| `/numbers` | تحويل الأنظمة الرقمية |
+| `/geometry` | الأشكال الهندسية |
+| `/contact` | تواصل |
+| `/login` · `/register` · `/forgot` | الحسابات |
+| `/menu` · `/services` | خريطة الموقع · كل الأدوات |
+
+---
+
+## 🚀 التشغيل · Getting Started
 
 ```bash
-npm install        # أو npm.cmd install (على Windows إن مُنعت npm)
-npm run dev        # خادم تطوير على http://localhost:5173
-npm run build      # بناء إنتاجي في مجلد dist/
+npm install        # أو npm.cmd install على Windows إن مُنع npm
+npm run dev        # خادم تطوير → http://localhost:5173
+npm run build      # بناء إنتاجي في dist/
 npm run preview    # معاينة البناء الإنتاجي
+npm test           # تشغيل الاختبارات (Vitest)
+npm run test:watch # الاختبارات في وضع المراقبة
 ```
 
-> ملاحظة خاصة بـ Windows: إن ظهرت رسالة تفيد بحجب PowerShell لسكربت `npm`، استخدم `npm.cmd`.
+> **ملاحظة Windows:** إن حجب PowerShell سكربت `npm`، استخدم `npm.cmd`.
 
-## 📁 البنية
+---
 
-```
-├── index.html              # نقطة الدخول (Vite)
-├── public/css/             # ملفات CSS الأصلية كما هي (style, theme, calc-ops, components, design)
-├── src/
-│   ├── main.js             # نقطة إقلاع التطبيق
-│   ├── App.vue             # الشريط العلوي + الفوتر + <router-view>
-│   ├── router/index.js     # المسارات (hash history ليعمل على أي استضافة ثابتة)
-│   ├── composables/        # i18n (عربي/إنجليزي) و theme (ليلي/نهاري)
-│   ├── services/           # auth (Supabase) و cloud (قاعدة البيانات) و siteConfig
-│   ├── lib/core.js         # MathEngine + BaseConv (منطق رياضي خالص)
-│   ├── components/         # AppNav, AppFooter, SavedHistory, SheetSolver
-│   └── views/              # 10 صفحات: home/calculator/numbers/geometry/contact
-│                          #   + login/register/forgot/menu/services
-├── supabase/               # schema.sql + SETUP.md لِقاعدة بيانات الحسابات
-└── legacy/                 # نسخة من الموقع القديم (HTML كلاسيكي) للرجوع إليها
+## 🧪 الاختبارات · Tests
+
+يفحص المشروع صحّة **محرّك الحساب** و**محوّل الأنظمة** و**الأعداد المركبة** و**المتراجحات** و**خطوات الحل** — بأكثر من **75 اختبارًا**:
+
+```bash
+npm test
 ```
 
-## 🗺️ المسارات
+```
+ ✓ tests/baseconv.test.js  (10 tests)
+ ✓ tests/ineq.test.js      (11 tests)
+ ✓ tests/steps.test.js     (13 tests)
+ ✓ tests/complex.test.js   (20 tests)
+ ✓ tests/core.test.js      (21 tests)
 
-| المسار        | الصفحة                     |
-|---------------|----------------------------|
-| `/`           | الرئيسية (مع حاسبة تجريبية)|
-| `/calculator` | الآلة الحاسبة العلمية      |
-| `/numbers`    | تحويل الأنظمة الرقمية      |
-| `/geometry`   | الأشكال الهندسية           |
-| `/contact`    | تواصل                      |
-| `/login`      | تسجيل الدخول               |
-| `/register`   | إنشاء حساب                 |
-| `/forgot`     | استعادة كلمة المرور        |
-| `/menu`       | خريطة الموقع               |
-| `/services`   | كل الأدوات                 |
+ Test Files  5 passed (5)
+      Tests  75 passed (75)
+```
 
-استخدمنا `hash history` (`#/calculator`) ليعمل التطبيق على أي استضافة ثابتة (GitHub Pages أو فتح `index.html` محلياً) دون إعدادات إضافية.
+---
+
+## ☁️ النشر · Deployment
+
+التطبيق موقع ثابت بالكامل (SPA بـ hash history) — يعمل على أي استضافة ثابتة **دون أي إعداد إضافي**.
+
+**Netlify (الأسرع):** اربط مستودع GitHub على Netlify؛ سيتعرّف تلقائيًا على `netlify.toml` (أمر البناء `npm run build`، مجلد النشر `dist`).
+
+**GitHub Pages:** فعّل `Settings → Pages → Source: GitHub Actions`؛ سيتكفّل `‎.github/workflows/deploy.yml` بالبناء والنشر عند كل دفعة إلى `main`.
+
+**محليًا:** افتح `dist/index.html` مباشرةً بعد البناء (المسارات نسبية).
+
+---
 
 ## 🔐 Supabase (اختياري)
 
-الحسابات والتخزين السحابي يعملان عبر Supabase تماماً كما في الموقع القديم:
+الحسابات والتخزين السحابي اختياريان تمامًا:
 
-1. أنشئ مشروعاً مجانياً على supabase.com
-2. نفّذ ملف `supabase/schema.sql` (جدولا profiles و tool_history و contact_messages)
-3. ضع `Project URL` و `anon public key` في `src/services/supabaseConfig.js`
+1. أنشئ مشروعًا مجانيًا على [supabase.com](https://supabase.com).
+2. نفّذ ملف `supabase/schema.sql` (جداول `profiles` و`tool_history` و`contact_messages`).
+3. ضع `Project URL` و`anon public key` في `src/services/supabaseConfig.js`.
 
-**عندما يكون الإعداد فارغاً (كما هو الآن) يعمل الموقع كاملاً بصمت:** لا أخطاء، ولا قيود على الأدوات.
+**عندما يكون الإعداد فارغًا (كما هو الآن) يعمل الموقع كاملًا بصمت:** لا أخطاء، ولا قيود على الأدوات.
 
-## 🔄 ما الذي تغيّر تقنياً؟
+---
 
-- **كل صفحة HTML مفردة** → مكوّن SFC واحد (قالب + منطق + أنماط عند الحاجة)
-- **`data-en` + إعادة الرسم اليدوي** → نظام i18n تفاعلي: `t('key')` و `L(عربي, English)` يعيدان الرسم تلقائياً عند تبديل اللغة
-- **build دون بناء** → فحص حقيقي للأخطاء وتحليل (`vite dev` / `vite build`)
-- **المنطق الرياضي** (`MathEngine`/`BaseConv`) منقول كما هو إلى `src/lib/core.js` دون تغيير
+## 🗺️ خارطة الطريق · Roadmap
+
+- [ ] نشر مباشر (Netlify / GitHub Pages) + رابط تجربة في الأعلى.
+- [ ] توسيع الاختبارات (تغطية إضافية + اختبارات مكوّنات).
+- [ ] PWA يعمل دون اتصال.
+- [ ] تقسيم `CalculatorView` إلى فئات عمليات مستقلة.
+- [ ] مشاركة التعبير عبر الرابط + لوحة إحصاءات أثرية (a11y pass).
+
+## 📄 الرخصة · License
+
+هذا مشروع شخصي/تعليمي. أضف ملف `LICENSE` (مقترح: MIT) إن رغبت بمشاركته كمصدر مفتوح.
+
+---
+
+<div align="center">
+  <sub>صُنع بعناية للعربية أولًا — Built Arabic-first, with care.</sub>
+</div>
