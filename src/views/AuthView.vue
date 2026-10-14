@@ -94,6 +94,9 @@ async function onRegister() {
 
 <template>
   <div class="as-wrap">
+    <!-- حركة خلفية خفيفة -->
+    <div class="as-bg" aria-hidden="true"><span></span><span></span><span></span></div>
+
     <!-- مبدّل الجوّال: يظهر فقط على الشاشات الصغيرة -->
     <div class="as-tabs" role="tablist">
       <button type="button" role="tab" :aria-selected="!isRegister" :class="{ active: !isRegister }" @click="go('login')">
@@ -202,8 +205,7 @@ async function onRegister() {
           <div class="as-overlay-inner">
             <div class="as-overlay-panel as-overlay-signin">
               <div class="as-content">
-                <div class="as-ov-logo" aria-hidden="true">🔐</div>
-                <h2 class="as-ov-title">{{ L('مرحباً بعودتك!', 'Welcome back!') }}</h2>
+                <h2 class="as-ov-title as-ov-badge">{{ L('مرحباً بعودتك!', 'Welcome back!') }}</h2>
                 <p class="as-ov-text">{{ L('لديك حساب بالفعل؟ سجّل الدخول لمتابعة نتائجك المحفوظة.', 'Already registered? Sign in to continue with your saved results.') }}</p>
                 <button type="button" class="as-ghost-btn" @click="go('login')">{{ L('تسجيل الدخول', 'Sign in') }}</button>
               </div>
@@ -211,8 +213,7 @@ async function onRegister() {
 
             <div class="as-overlay-panel as-overlay-signup">
               <div class="as-content">
-                <div class="as-ov-logo" aria-hidden="true">✨</div>
-                <h2 class="as-ov-title">{{ L('مرحباً بك!', 'Hello, friend!') }}</h2>
+                <h2 class="as-ov-title as-ov-badge">{{ L('مرحباً بك!', 'Hello, friend!') }}</h2>
                 <p class="as-ov-text">{{ L('أنشئ حساباً مجانياً واحفظ كل نتائجك على جميع أجهزتك.', 'Create a free account and keep all your results on every device.') }}</p>
                 <button type="button" class="as-ghost-btn" @click="go('register')">{{ L('إنشاء حساب جديد', 'Create account') }}</button>
               </div>
@@ -221,23 +222,70 @@ async function onRegister() {
         </div>
       </div>
     </div>
-
-    <div class="demo-note as-note">
-      <span aria-hidden="true">⚠️</span>
-      <span v-html="L('<strong>حساب آمن:</strong> يُحفظ حسابك ونتائجك في قاعدة بيانات Supabase المشفّرة — لا تشارك كلمة مرورك مع أحد.', '<strong>Secure account:</strong> your account and results are stored in Supabase\'s encrypted database — never share your password.')"></span>
-    </div>
   </div>
 </template>
 
 <style scoped>
 .as-wrap {
+  position: relative;
   max-width: 940px;
   margin: 0 auto;
   padding: 2.6rem clamp(1rem, 4vw, 2rem) 4rem;
 }
 
+/* ══════════ حركة الخلفية ══════════ */
+.as-bg {
+  position: absolute;
+  inset: -6% -4%;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+}
+.as-bg span {
+  position: absolute;
+  width: clamp(160px, 34vw, 300px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(48px);
+  opacity: 0.3;
+}
+.as-bg span:nth-child(1) {
+  background: var(--accent);
+  top: -6%;
+  inset-inline-start: -4%;
+  animation: as-drift-a 16s ease-in-out infinite;
+}
+.as-bg span:nth-child(2) {
+  background: var(--accent-2);
+  bottom: -10%;
+  inset-inline-end: -6%;
+  animation: as-drift-b 19s ease-in-out infinite;
+}
+.as-bg span:nth-child(3) {
+  background: var(--hl);
+  top: 42%;
+  inset-inline-start: 46%;
+  opacity: 0.2;
+  animation: as-drift-c 22s ease-in-out infinite;
+}
+@keyframes as-drift-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(18%, 20%) scale(1.12); }
+}
+@keyframes as-drift-b {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-16%, -18%) scale(1.1); }
+}
+@keyframes as-drift-c {
+  0%, 100% { transform: translate(0, 0) scale(0.9); }
+  50% { transform: translate(-20%, 14%) scale(1.15); }
+}
+
 /* ══════════ المبدّل (يظهر على الجوّال فقط) ══════════ */
 .as-tabs {
+  position: relative;
+  z-index: 1;
   display: none;
   gap: 0.5rem;
   margin-bottom: 1rem;
@@ -265,6 +313,7 @@ async function onRegister() {
 /* ══════════ الإطار ══════════ */
 .as-shell {
   position: relative;
+  z-index: 1;
   width: 100%;
   height: 560px;
   overflow: hidden;
@@ -375,19 +424,17 @@ async function onRegister() {
 .as-shell.is-register .as-overlay-signin { transform: translateX(0); }
 .as-shell.is-register .as-overlay-signup { transform: translateX(20%); }
 
-.as-ov-logo {
-  width: 62px;
-  height: 62px;
-  margin: 0 auto 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.7rem;
-  background: var(--hl);
+.as-ov-badge {
+  display: inline-block;
+  font-size: clamp(1.05rem, 3.1vw, 1.35rem);
+  font-weight: 900;
   color: #0d1633;
+  background: var(--hl);
   border: 2px solid var(--line);
-  border-radius: 16px;
+  border-radius: 14px;
+  padding: 0.55rem 1.15rem;
   box-shadow: 3px 3px 0 var(--shadow-ink);
+  margin-bottom: 1rem;
 }
 .as-ov-title { font-size: clamp(1.2rem, 3.4vw, 1.5rem); font-weight: 900; margin-bottom: 0.5rem; }
 .as-ov-text { font-size: 0.9rem; line-height: 1.8; margin-bottom: 1.4rem; opacity: 0.95; }
@@ -405,8 +452,6 @@ async function onRegister() {
   transition: background var(--transition), color var(--transition), transform var(--transition);
 }
 .as-ghost-btn:hover { background: var(--btn-fg); color: var(--btn-bg); transform: translateY(-1px); }
-
-.as-note { margin-top: 1.4rem; margin-bottom: 0; }
 
 /* ══════════ الاتجاه من اليمين إلى اليسار (العربية) ══════════
    نُعكس كل المواضع الأفقية والإزاحات يدوياً (بدل قلب المسرح) لضمان
@@ -457,5 +502,6 @@ async function onRegister() {
   .as-overlay,
   .as-overlay-inner,
   .as-overlay-panel { transition: none !important; }
+  .as-bg span { animation: none !important; }
 }
 </style>

@@ -45,7 +45,6 @@ const credit = computed(() => {
         <router-link to="/geometry">{{ L('الهندسة', 'Geometry') }}</router-link>
         <router-link to="/">{{ L('من نحن', 'About us') }}</router-link>
         <router-link to="/contact">{{ L('تواصل', 'Contact') }}</router-link>
-        <router-link to="/menu">{{ L('خريطة الموقع', 'Site map') }}</router-link>
         <router-link to="/login">{{ L('الحساب', 'Account') }}</router-link>
       </nav>
       <div v-if="ext.length" class="ft-ext">

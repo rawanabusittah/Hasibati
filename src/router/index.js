@@ -56,12 +56,6 @@ const routes = [
     meta: { title: ['نسيت كلمة المرور — حاسباتي', 'Forgot password — Hasibati'] }
   },
   {
-    path: '/menu',
-    name: 'menu',
-    component: () => import('../views/MenuView.vue'),
-    meta: { title: ['القائمة الرئيسية — حاسباتي', 'Site Menu — Hasibati'] }
-  },
-  {
     path: '/services',
     name: 'services',
     component: () => import('../views/ServicesView.vue'),

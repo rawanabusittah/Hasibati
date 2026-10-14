@@ -84,9 +84,8 @@ async function onSubmit() {
     </template>
 
     <div class="ct-grid">
-      <!-- النموذج — صندوق البريد -->
-      <section class="ct-card ct-mailbox" aria-labelledby="ct-form-h">
-        <div class="ct-rings" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <!-- النموذج — بطاقة بمظهر بطاقة تسجيل الدخول -->
+      <section class="ct-card ct-form-card" aria-labelledby="ct-form-h">
         <h2 id="ct-form-h" class="ct-h">{{ L('أرسل رسالة', 'Send a message') }}</h2>
         <form novalidate @submit.prevent="onSubmit">
           <div class="field-row ct-two">
@@ -124,3 +123,35 @@ async function onSubmit() {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* بطاقات التواصل بمظهر بطاقة تسجيل الدخول، بلون غير الأزرق (البرتقالي)
+   لأن الأزرق مخصّص لصفحة الدخول. */
+.ct-card {
+  --ct-accent: var(--accent-4);
+  border-radius: var(--radius-lg);
+  box-shadow: 6px 6px 0 var(--shadow-ink);
+  overflow: hidden;
+}
+.ct-card::before { height: 8px; background: var(--ct-accent); }
+.ct-h { border-inline-start-color: var(--ct-accent); }
+
+/* الحقول تأخذ لون القسم عند التركيز */
+.ct-card .input-group input:focus,
+.ct-card .input-group textarea:focus {
+  border-color: var(--ct-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ct-accent) 22%, transparent), 3px 3px 0 var(--shadow-ink);
+}
+
+/* زر الإرسال بلون القسم بدل الأزرق */
+.ct-form-card .btn-primary {
+  background: var(--ct-accent);
+  border-color: color-mix(in srgb, var(--ct-accent) 70%, #000);
+  color: var(--btn-fg);
+}
+.ct-form-card .btn-primary:hover { filter: brightness(1.06); }
+
+.ct-mail { color: var(--ct-accent); }
+.ct-faq summary:hover,
+.ct-faq[open] summary::after { color: var(--ct-accent); }
+</style>
