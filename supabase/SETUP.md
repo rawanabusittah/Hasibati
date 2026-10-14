@@ -26,28 +26,35 @@
 > المخطط ينشئ ثلاث جداول مع حماية RLS كاملة:
 > كل مستخدم يرى بياناته فقط، ورسائل التواصل يراها أنت فقط من لوحة Supabase.
 
-## 3) الصق المفاتيح في الموقع
+## 3) اربط المفاتيح بالموقع (بلا تخزينها في الكود)
 
-1. من القائمة الجانبية افتح **Settings ← API** (أو **Project Settings ← API**).
-2. انسخ **Project URL** (مثل `https://xxxx.supabase.co`).
-3. انسخ **anon / public** key (المفتاح العام — آمن للنشر في المتصفح).
-4. افتح ملف `js/supabase-config.js` في مشروعك واستبدل الخطين الأخيرين:
+المشروع يقرأ المفاتيح من **متغيرات بيئة Vite**، فلا حاجة لوضعها في أي ملف مصدري.
 
-```js
-const SUPABASE_URL = 'https://xxxx.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOi...';
-```
+**أ) للنشر على GitHub Pages (موصى به):**
+1. في المستودع: **Settings ← Secrets and variables ← Actions**.
+2. اضغط **New repository secret** وأضف سرًّا باسم `VITE_SUPABASE_URL` وقيمته Project URL.
+3. أضف سرًّا آخر باسم `VITE_SUPABASE_ANON_KEY` وقيمته anon/public key.
+4. أعد تشغيل سير العمل: **Actions ← Deploy to GitHub Pages ← Re-run all jobs**
+   (أو أي دفعة جديدة إلى `main`).
 
-5. حدّث الصفحة — ستظهر رسالة "بقعة" عند تسجيل الدخول فوراً.
+**ب) للتجربة محليًا (اختياري):**
+1. انسخ `.env.example` إلى ملف جديد باسم `.env` في جذر المشروع.
+2. املأ القيمتين ثم شغّل `npm run dev`.
 
-## 4) اسمح للروابط المحلية (مهم للتجربة)
+> عند غياب المفاتيح يعمل الموقع كاملًا لكن بلا حسابات (وضع صامت آمن)؛
+> وبمجرد إضافتها يظهر التسجيل وحفظ السجل فورًا.
+
+## 4) اسمح بروابط العودة (مهم للتأكيد واستعادة كلمة المرور)
 
 1. **Authentication ← URL Configuration**.
 2. في **Redirect URLs** أضف:
-   - `http://127.0.0.1:8377/**`  ← المعاينة المحلية
-   - `http://localhost:8377/**`   ← اختياري
-   - ومجالك النهائي لاحقاً (مثل `https://hasibati.com/**`)
-3. وفي **Site URL** ضع `http://127.0.0.1:8377` (أو مجالك لاحقاً).
+   - `https://rawanabusittah.github.io/Hasibati/**`  ← النشر على GitHub Pages
+   - `http://localhost:5173/**`  ← التشغيل المحلي (`npm run dev`)
+   - `http://localhost:4173/**`  ← معاينة البناء (`npm run preview`)
+   - `http://127.0.0.1:5173/**`  و `http://127.0.0.1:4173/**`  ← اختياري
+3. وفي **Site URL** ضع رابط النشر النهائي: `https://rawanabusittah.github.io/Hasibati/`.
+
+> بدون هذه الروابط سيفشل تأكيد البريد ورابط استعادة كلمة المرور عند النشر.
 
 ## 5) (اختياري) تسجيل فوري بدون تأكيد البريد
 

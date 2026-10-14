@@ -233,13 +233,17 @@ npm test
 
 ## 🔐 Supabase (اختياري)
 
-الحسابات والتخزين السحابي اختياريان تمامًا:
+الحسابات والتخزين السحابي اختياريان تمامًا، والمفاتيح تُقرأ من **متغيرات البيئة** فلا تُخزَّن في الكود:
 
 1. أنشئ مشروعًا مجانيًا على [supabase.com](https://supabase.com).
 2. نفّذ ملف `supabase/schema.sql` (جداول `profiles` و`tool_history` و`contact_messages`).
-3. ضع `Project URL` و`anon public key` في `src/services/supabaseConfig.js`.
+3. أضف المفتاحين:
+   - **للنشر:** أسرار المستودع — `Settings → Secrets and variables → Actions` → `VITE_SUPABASE_URL` و`VITE_SUPABASE_ANON_KEY`.
+   - **محليًا:** انسخ `.env.example` إلى `.env` واملأ القيمتين.
 
-**عندما يكون الإعداد فارغًا (كما هو الآن) يعمل الموقع كاملًا بصمت:** لا أخطاء، ولا قيود على الأدوات.
+التفاصيل خطوة بخطوة في `supabase/SETUP.md`.
+
+**عندما تكون متغيرات البيئة غائبة يعمل الموقع كاملًا بصمت:** لا أخطاء، ولا قيود على الأدوات.
 
 ---
 
