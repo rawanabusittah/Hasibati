@@ -130,8 +130,11 @@
 │   │   ├── core.js           # MathEngine (محلّل تعبيرات) + BaseConv (BigInt)
 │   │   ├── steps.js          # محرّك خطوات الحل
 │   │   ├── ineq.js           # حلّ المتراجحات
-│   │   └── complex.js        # محرّك الأعداد المركبة
+│   │   ├── complex.js        # محرّك الأعداد المركبة
+│   │   ├── calcOps.js        # فئات عمليات الآلة الحاسبة (بيانات ثنائية اللغة)
+│   │   └── calcFormat.js     # تنسيق موحّد للأرقام
 │   ├── components/           # AppNav, AppFooter, SavedHistory, SheetSolver
+│   │   └── Calc*.vue         # مكوّنات الحاسبة: CalcOpsPanel · CalcKeypad · CalcStepsDialog
 │   └── views/                # 10 صفحات (home/calculator/numbers/geometry/contact + auth/menu/services)
 ├── tests/                    # اختبارات الوحدة (Vitest)
 ├── supabase/                 # schema.sql + SETUP.md لقاعدة البيانات
@@ -246,7 +249,7 @@ npm test
 - [ ] توسيع الاختبارات (تغطية إضافية + اختبارات مكوّنات).
 - [x] PWA يعمل دون اتصال وقابل للتثبيت.
 - [x] مراجعة إتاحة الوصول (a11y) — Lighthouse 100 للمسارات الرئيسية.
-- [ ] تقسيم `CalculatorView` إلى فئات عمليات مستقلة.
+- [x] تقسيم `CalculatorView` إلى فئات عمليات مستقلة (بيانات + مكوّنات قابلة لإعادة الاستخدام).
 - [ ] مشاركة التعبير عبر الرابط + روابط عميقة للحسابات.
 
 ## 📄 الرخصة · License
