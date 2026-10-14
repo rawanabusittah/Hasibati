@@ -947,7 +947,7 @@ body::after {
   flex-shrink: 0;
 }
 
-.service-head h3 { font-size: clamp(1.1rem, 3vw, 1.3rem); font-weight: 800; margin: 0; }
+.service-head h2, .service-head h3 { font-size: clamp(1.1rem, 3vw, 1.3rem); font-weight: 800; margin: 0; }
 
 .service-info p {
   font-size: 0.93rem;

@@ -17,7 +17,7 @@ const { L } = useI18n()
       <div class="service-info">
         <div class="service-head">
           <span class="service-num">01</span>
-          <h3>{{ L('الآلة الحاسبة العلمية', 'Scientific Calculator') }}</h3>
+          <h2>{{ L('الآلة الحاسبة العلمية', 'Scientific Calculator') }}</h2>
         </div>
         <p>{{ L('ابنِ تعبيرك مع معاينة حيّة للنتيجة ثم اضغط يساوي. تدعم العمليات الأربع والأسس والجذور والدوال المثلثية بالدرجات أو الراديان واللوغاريتمات والمضروب وثابتي π وe — مع سجل محفوظ وتحكم كامل من لوحة المفاتيح.', 'Build expressions with a live preview, then press equals. Supports the four operations, powers and roots, trigonometry in degrees or radians, logarithms, factorial and the constants π and e — plus a saved history and full keyboard control.') }}</p>
         <div class="service-tags">
@@ -36,7 +36,7 @@ const { L } = useI18n()
       <div class="service-info">
         <div class="service-head">
           <span class="service-num">02</span>
-          <h3>{{ L('محوّل الأنظمة الرقمية', 'Number Systems Converter') }}</h3>
+          <h2>{{ L('محوّل الأنظمة الرقمية', 'Number Systems Converter') }}</h2>
         </div>
         <p>{{ L('حوّل بين الثنائي والثماني والعشري والسداسي عشر. يعتمد على BigInt فتبقى الأعداد الصحيحة دقيقة مهما كبرت، ويدعم السالب والكسور والبادئات 0x / 0b / 0o. ويمكن نسخ كل نتيجة بنقرة واحدة.', 'Convert between binary, octal, decimal and hexadecimal. Uses BigInt, so integers of any size stay exact, and it handles negatives, fractions and 0x / 0b / 0o prefixes. Each result can be copied in one click.') }}</p>
         <div class="service-tags">
@@ -55,7 +55,7 @@ const { L } = useI18n()
       <div class="service-info">
         <div class="service-head">
           <span class="service-num">03</span>
-          <h3>{{ L('حاسبة الأشكال الهندسية', 'Geometry Solver') }}</h3>
+          <h2>{{ L('حاسبة الأشكال الهندسية', 'Geometry Solver') }}</h2>
         </div>
         <p>{{ L('المساحة والمحيط وغيرهما لخمسة أشكال. يُحلّ المثلث من أضلاعه الثلاثة (صيغة هيرون) مع التحقق من إمكانية تكوينه وتحديد نوعه، وتعطي الكرة الحجم والمساحة السطحية. وتظهر المعادلة بجانب كل نتيجة.', 'Area, perimeter and more for five shapes. The triangle is solved from its three sides (Heron\'s formula) with validity checking and type detection; the sphere gives volume and surface area. Every result shows its formula.') }}</p>
         <div class="service-tags">

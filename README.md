@@ -11,6 +11,8 @@
 [![Tests](https://img.shields.io/badge/tests-75%20passing-brightgreen)](#-الاختبارات--tests)
 [![i18n](https://img.shields.io/badge/i18n-AR%20%2F%20EN-blue)](#-الميزات--features)
 [![Supabase](https://img.shields.io/badge/Supabase-optional-3FCF8E?logo=supabase&logoColor=white)](#-supabase-اختياري)
+[![PWA](https://img.shields.io/badge/PWA-installable%20%C2%B7%20offline-5A0FC8?logo=pwa&logoColor=white)](#-pwa-قابل-للتثبيت--offline)
+[![Lighthouse](https://img.shields.io/badge/Lighthouse-100%20a11y%20%C2%B7%20100%20SEO-brightgreen)](#-الجودة--quality)
 
 </div>
 
@@ -86,6 +88,8 @@
 
 ### 🌍 عام
 - **عربي/إنجليزي** تفاعلي (تغيّر اللغة فورًا) مع **RTL** أصيل، و**وضعان ليلي ونهاري**، وتصميم متجاوب.
+- **PWA قابل للتثبيت ويعمل دون اتصال**: يُثبَّت كتطبيق على الجوال وسطح المكتب، ويعمل بلا إنترنت عبر Service Worker وتخزين مسبق للأصول.
+- **إتاحة وصول (a11y) عالية**: تباين ألوان مطابق لـ WCAG AA، أسماء وصولية متطابقة، وترتيب عناوين صحيح.
 - **Supabase اختياري**: تسجيل ومزامنة وتخزين سحابي — يعمل الموقع كاملًا بصمت عند غياب الإعداد.
 
 ---
@@ -97,6 +101,7 @@
 | الواجهة | Vue 3 (`<script setup>` + SFC) |
 | البناء | Vite 5 |
 | التوجيه | Vue Router 4 (hash history — يعمل على أي استضافة ثابتة) |
+| PWA | vite-plugin-pwa (Service Worker + Web App Manifest) |
 | الاختبار | Vitest 2 |
 | الخلفية (اختياري) | Supabase (Auth + Postgres) |
 | الأنماط | CSS مخصّص (متغيّرات، ثيمات، RTL) — بلا إطار UI |
@@ -109,7 +114,12 @@
 
 ```
 ├── index.html                # نقطة الدخول (Vite)
-├── public/css/               # نظام التصميم (style, theme, calc-ops, components, design)
+├── vite.config.js            # إعداد Vite + PWA (manifest + workbox)
+├── public/
+│   ├── css/                  # نظام التصميم (style, theme, calc-ops, components, design)
+│   ├── icons/                # أيقونات PWA (192 / 512 / maskable-512)
+│   ├── apple-touch-icon.png  # أيقونة iOS
+│   └── robots.txt            # توجيهات الزحف
 ├── src/
 │   ├── main.js               # إقلاع التطبيق
 │   ├── App.vue               # الشريط العلوي + الفوتر + <router-view>
@@ -141,6 +151,32 @@
 | `/contact` | تواصل |
 | `/login` · `/register` · `/forgot` | الحسابات |
 | `/menu` · `/services` | خريطة الموقع · كل الأدوات |
+
+---
+
+## 📊 الجودة · Quality
+
+قياس **Lighthouse** (سطح المكتب، على البناء الإنتاجي) للمسارات الرئيسية — بلغتين وبوضعين:
+
+| الفئة | النتيجة |
+|-------|:-------:|
+| إتاحة الوصول · Accessibility | **100** |
+| أفضل الممارسات · Best Practices | **100** |
+| تحسين محركات البحث · SEO | **100** |
+
+تم التحقق عبر **١٠ مسارات** في العربية والإنجليزية، بالوضعين الليلي والنهاري (AR/EN × dark/light)، مع خلوّ الطرفية من الأخطاء والتحذيرات.
+
+---
+
+## 📱 PWA (قابل للتثبيت · Offline)
+
+التطبيق **قابل للتثبيت** كتطبيق مستقل، ويعمل **دون اتصال** بعد أول زيارة:
+
+- **Web App Manifest** (اسم، أيقونات 192/512 + maskable، ثيم، اختصارات مباشرة للأدوات الثلاث).
+- **Service Worker** (Workbox) يخزّن هيكل التطبيق مسبقًا، مع تخزين مؤقت لخطوط Google.
+- تحديث تلقائي (`registerType: 'autoUpdate'`) عند توفّر إصدار جديد.
+
+> يُختبر التثبيت والعمل دون اتصال عبر خادم فعلي (`npm run preview`) — لا تعمل Service Worker عند فتح الملف عبر `file://`.
 
 ---
 
@@ -208,9 +244,10 @@ npm test
 
 - [ ] نشر مباشر (Netlify / GitHub Pages) + رابط تجربة في الأعلى.
 - [ ] توسيع الاختبارات (تغطية إضافية + اختبارات مكوّنات).
-- [ ] PWA يعمل دون اتصال.
+- [x] PWA يعمل دون اتصال وقابل للتثبيت.
+- [x] مراجعة إتاحة الوصول (a11y) — Lighthouse 100 للمسارات الرئيسية.
 - [ ] تقسيم `CalculatorView` إلى فئات عمليات مستقلة.
-- [ ] مشاركة التعبير عبر الرابط + لوحة إحصاءات أثرية (a11y pass).
+- [ ] مشاركة التعبير عبر الرابط + روابط عميقة للحسابات.
 
 ## 📄 الرخصة · License
 

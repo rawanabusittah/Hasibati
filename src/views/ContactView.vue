@@ -105,7 +105,7 @@ async function onSubmit() {
           </div>
           <button type="submit" class="btn-primary">{{ t('contact.send') }}</button>
           <p v-if="SITE.email" class="ct-mail-line">
-            <a class="ct-mail" :href="'mailto:' + SITE.email" :aria-label="L('راسلني على', 'Email me at')">{{ SITE.email }}</a>
+            <a class="ct-mail" :href="'mailto:' + SITE.email" :aria-label="L('راسلني على ' + SITE.email, 'Email me at ' + SITE.email)">{{ SITE.email }}</a>
           </p>
           <div class="form-status" :class="statusKind" role="status" aria-live="polite">{{ statusText }}</div>
         </form>

@@ -252,6 +252,8 @@ body::after { display: none; }
 .calc-btn.op { background: color-mix(in srgb, var(--accent) 14%, var(--bg-card)); }
 .calc-btn.fn { color: var(--accent-2); font-size: 1rem; background: var(--bg-secondary); }
 .calc-btn.clear { color: var(--accent-danger); background: color-mix(in srgb, var(--accent-danger) 14%, var(--bg-card)); }
+/* الوضع النهاري: أحمر أغمق + تظليل أخف لبلوغ تباين WCAG AA (≥ 4.5:1) */
+:root[data-theme="light"] .calc-btn.clear { color: #b3261e; background: color-mix(in srgb, var(--accent-danger) 12%, var(--bg-card)); }
 .calc-btn.eq, .calc-btn.eq:hover { background: var(--btn-bg); color: var(--btn-fg); font-size: 1.6rem; filter: none; }
 .calc-btn.eq:active { background: var(--btn-bg); color: var(--btn-fg); }
 .calc-btn.fn:hover, .calc-btn.clear:hover, .calc-btn.op:hover { filter: none; }

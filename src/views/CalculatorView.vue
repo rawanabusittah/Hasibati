@@ -625,7 +625,7 @@ function insertOp(op) {
 
 // ── لوحة الأرقام ──
 const pad = [
-  { act: 'clear', label: 'AC', cls: 'clear', aria: [L('مسح الكل', 'Clear all')] },
+  { act: 'clear', label: 'AC', cls: 'clear', aria: [L('مسح الكل (AC)', 'Clear all (AC)')] },
   { act: 'back', label: '⌫', cls: 'fn', aria: [L('مسح آخر حرف', 'Backspace')] },
   { act: 'append', val: '(', label: '(', cls: 'fn', aria: [L('قوس فتح', 'Open parenthesis')] },
   { act: 'append', val: ')', label: ')', cls: 'fn', aria: [L('قوس إغلاق', 'Close parenthesis')] },
@@ -719,7 +719,7 @@ const visibleCats = CATS.filter(c => c !== 'history')
         type="button"
         class="bar-btn bar-mode"
         :aria-pressed="String(angle === 'deg')"
-        :aria-label="L('وحدة الزوايا: درجات / راديان', 'Angle unit: degrees / radians')"
+        :aria-label="L(modeLabel + ' — وحدة الزوايا (اضغط للتبديل)', modeLabel + ' — angle unit (tap to switch)')"
         @click="toggleMode"
       >{{ modeLabel }}</button>
       <input
@@ -738,7 +738,7 @@ const visibleCats = CATS.filter(c => c !== 'history')
       />
       <div class="calc-result bar-result" :class="{ 'is-error': resultError }" role="status" aria-live="polite" :aria-label="L('النتيجة', 'Result')">{{ result }}</div>
       <button type="button" class="bar-btn" :class="{ copied }" @click="onPad('copy')">{{ copyLabel }}</button>
-      <button type="button" class="bar-btn bar-steps" :aria-label="L('استعرض خطوات الحل بالترتيب', 'Show the solution steps in order')" @click="openSteps">{{ L('استعرض الخطوات', 'Show steps') }}</button>
+      <button type="button" class="bar-btn bar-steps" :aria-label="L('استعرض الخطوات بالترتيب', 'Show steps in order')" @click="openSteps">{{ L('استعرض الخطوات', 'Show steps') }}</button>
     </div>
 
     <div class="calc-layout calc-layout--ops">
