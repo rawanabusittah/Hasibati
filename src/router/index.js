@@ -35,16 +35,18 @@ const routes = [
     component: () => import('../views/ContactView.vue'),
     meta: { title: ['تواصل — حاسباتي', 'Contact — Hasibati'] }
   },
+  // صفحة واحدة للدخول والتسجيل: لوحتان متجاورتان تنزلق إحداهما فوق الأخرى.
+  // نفس المكوّن للمسارين كي تُحفظ الحالة ويَعبُر الانزلاق بينهما بسلاسة دون إعادة تحميل.
   {
     path: '/login',
     name: 'login',
-    component: () => import('../views/LoginView.vue'),
+    component: () => import('../views/AuthView.vue'),
     meta: { title: ['تسجيل الدخول — حاسباتي', 'Sign in — Hasibati'] }
   },
   {
     path: '/register',
     name: 'register',
-    component: () => import('../views/RegisterView.vue'),
+    component: () => import('../views/AuthView.vue'),
     meta: { title: ['إنشاء حساب جديد — حاسباتي', 'Create account — Hasibati'] }
   },
   {
