@@ -20,17 +20,52 @@ const rtA = ref('')
 const rtB = ref('')
 const rtC = ref('')
 const sphR = ref('')
+// ── أشكال إضافية ──
+const rhoD1 = ref('')
+const rhoD2 = ref('')
+const parA = ref('')
+const parB = ref('')
+const parH = ref('')
+const trpA = ref('')
+const trpB = ref('')
+const trpH = ref('')
+const trpC = ref('')
+const trpD = ref('')
+const polyN = ref('')
+const polyS = ref('')
+const ellA = ref('')
+const ellB = ref('')
+const secR = ref('')
+const secAngle = ref('')
+const cubeA = ref('')
+const cubL = ref('')
+const cubW = ref('')
+const cubH = ref('')
+const cylR = ref('')
+const cylH = ref('')
+const coneR = ref('')
+const coneH = ref('')
 
-const errors = reactive({ circle: '', square: '', rect: '', triangle: '', right: '', sphere: '' })
-const results = reactive({ circle: [], square: [], rect: [], triangle: [], right: [], sphere: [] })
+const errors = reactive({ circle: '', square: '', rect: '', triangle: '', right: '', sphere: '', rhombus: '', parallelogram: '', trapezoid: '', polygon: '', ellipse: '', sector: '', cube: '', cuboid: '', cylinder: '', cone: '' })
+const results = reactive({ circle: [], square: [], rect: [], triangle: [], right: [], sphere: [], rhombus: [], parallelogram: [], trapezoid: [], polygon: [], ellipse: [], sector: [], cube: [], cuboid: [], cylinder: [], cone: [] })
 
 const shapes = [
-  { id: 'circle', label: L('الدائرة', 'Circle'), icon: '⭕' },
-  { id: 'square', label: L('المربع', 'Square'), icon: '🟦' },
-  { id: 'rect', label: L('المستطيل', 'Rectangle'), icon: '▬' },
-  { id: 'triangle', label: L('المثلث', 'Triangle'), icon: '🔺' },
-  { id: 'right', label: L('المثلث القائم', 'Right triangle'), icon: '📐' },
-  { id: 'sphere', label: L('الكرة', 'Sphere'), icon: '🔵' }
+  { id: 'circle', ar: 'الدائرة', en: 'Circle', icon: '⭕' },
+  { id: 'square', ar: 'المربع', en: 'Square', icon: '🟦' },
+  { id: 'rect', ar: 'المستطيل', en: 'Rectangle', icon: '▬' },
+  { id: 'triangle', ar: 'المثلث', en: 'Triangle', icon: '🔺' },
+  { id: 'right', ar: 'المثلث القائم', en: 'Right triangle', icon: '📐' },
+  { id: 'rhombus', ar: 'المعين', en: 'Rhombus', icon: '🔷' },
+  { id: 'parallelogram', ar: 'متوازي الأضلاع', en: 'Parallelogram', icon: '⬛' },
+  { id: 'trapezoid', ar: 'شبه المنحرف', en: 'Trapezoid', icon: '⏢' },
+  { id: 'polygon', ar: 'المضلع المنتظم', en: 'Regular polygon', icon: '⬡' },
+  { id: 'ellipse', ar: 'القطع الناقص', en: 'Ellipse', icon: '🥚' },
+  { id: 'sector', ar: 'القطاع الدائري', en: 'Sector', icon: '🍕' },
+  { id: 'sphere', ar: 'الكرة', en: 'Sphere', icon: '🔵' },
+  { id: 'cube', ar: 'المكعب', en: 'Cube', icon: '🧊' },
+  { id: 'cuboid', ar: 'متوازي المستطيلات', en: 'Cuboid', icon: '📦' },
+  { id: 'cylinder', ar: 'الأسطوانة', en: 'Cylinder', icon: '🛢️' },
+  { id: 'cone', ar: 'المخروط', en: 'Cone', icon: '🍦' }
 ]
 
 const U2 = 'geo.unit2', U3 = 'geo.unit3', U = 'geo.unit'
@@ -58,6 +93,16 @@ function calc(shape) {
     case 'triangle': return calcTriangle()
     case 'right': return calcRight()
     case 'sphere': return calcSphere()
+    case 'rhombus': return calcRhombus()
+    case 'parallelogram': return calcParallelogram()
+    case 'trapezoid': return calcTrapezoid()
+    case 'polygon': return calcPolygon()
+    case 'ellipse': return calcEllipse()
+    case 'sector': return calcSector()
+    case 'cube': return calcCube()
+    case 'cuboid': return calcCuboid()
+    case 'cylinder': return calcCylinder()
+    case 'cone': return calcCone()
   }
 }
 
@@ -171,6 +216,147 @@ function calcSphere() {
   ]
   saveTool('geometry', 'sphere', 'r=' + r)
 }
+
+// ════════ أشكال ثنائية الأبعاد إضافية ════════
+function calcRhombus() {
+  const d1 = parseFloat(rhoD1.value)
+  const d2 = parseFloat(rhoD2.value)
+  if (!(d1 > 0) || !(d2 > 0) || !Number.isFinite(d1) || !Number.isFinite(d2)) { errors.rhombus = t('geo.err.diag'); results.rhombus = []; return }
+  errors.rhombus = ''
+  const side = Math.sqrt(Math.pow(d1 / 2, 2) + Math.pow(d2 / 2, 2))
+  results.rhombus = [
+    { label: t('geo.area'), raw: (d1 * d2) / 2, unit: t(U2), formula: 'A = (d₁ × d₂) ÷ 2' },
+    { label: t('geo.side'), raw: side, unit: t(U), formula: 'a = √((d₁/2)² + (d₂/2)²)' },
+    { label: t('geo.perimeter'), raw: 4 * side, unit: t(U), formula: 'P = 4 × a' }
+  ]
+  saveTool('geometry', 'rhombus', 'd1=' + d1 + ', d2=' + d2)
+}
+function calcParallelogram() {
+  const a = parseFloat(parA.value)
+  const b = parseFloat(parB.value)
+  const h = parseFloat(parH.value)
+  if (!(a > 0) || !(b > 0) || !(h > 0) || !Number.isFinite(a) || !Number.isFinite(b) || !Number.isFinite(h)) { errors.parallelogram = t('geo.err.rect'); results.parallelogram = []; return }
+  errors.parallelogram = ''
+  results.parallelogram = [
+    { label: t('geo.area'), raw: b * h, unit: t(U2), formula: 'A = b × h' },
+    { label: t('geo.perimeter'), raw: 2 * (a + b), unit: t(U), formula: 'P = 2 × (a + b)' }
+  ]
+  saveTool('geometry', 'parallelogram', 'a=' + a + ', b=' + b + ', h=' + h)
+}
+function calcTrapezoid() {
+  const a = parseFloat(trpA.value)
+  const b = parseFloat(trpB.value)
+  const h = parseFloat(trpH.value)
+  if (!(a > 0) || !(b > 0) || !(h > 0) || !Number.isFinite(a) || !Number.isFinite(b) || !Number.isFinite(h)) { errors.trapezoid = t('geo.err.rect'); results.trapezoid = []; return }
+  errors.trapezoid = ''
+  const c = parseFloat(trpC.value)
+  const d = parseFloat(trpD.value)
+  results.trapezoid = [
+    { label: t('geo.area'), raw: ((a + b) / 2) * h, unit: t(U2), formula: 'A = ((a + b) ÷ 2) × h' },
+    { label: t('geo.median'), raw: (a + b) / 2, unit: t(U), formula: 'm = (a + b) ÷ 2' }
+  ]
+  if (c > 0 && d > 0 && Number.isFinite(c) && Number.isFinite(d)) {
+    results.trapezoid.push({ label: t('geo.perimeter'), raw: a + b + c + d, unit: t(U), formula: 'P = a + b + c + d' })
+  }
+  saveTool('geometry', 'trapezoid', 'a=' + a + ', b=' + b + ', h=' + h)
+}
+function calcPolygon() {
+  const n = parseInt(polyN.value, 10)
+  const s = parseFloat(polyS.value)
+  if (!Number.isInteger(n) || n < 3) { errors.polygon = t('geo.err.poly'); results.polygon = []; return }
+  if (!(s > 0) || !Number.isFinite(s)) { errors.polygon = t('geo.err.side'); results.polygon = []; return }
+  errors.polygon = ''
+  const tan = Math.tan(Math.PI / n)
+  results.polygon = [
+    { label: t('geo.perimeter'), raw: n * s, unit: t(U), formula: 'P = n × s' },
+    { label: t('geo.area'), raw: (n * s * s) / (4 * tan), unit: t(U2), formula: 'A = (n × s²) ÷ (4 × tan(π/n))' },
+    { label: t('geo.apothem'), raw: s / (2 * tan), unit: t(U), formula: 'r = s ÷ (2 × tan(π/n))' },
+    { label: t('geo.circumradius'), raw: s / (2 * Math.sin(Math.PI / n)), unit: t(U), formula: 'R = s ÷ (2 × sin(π/n))' }
+  ]
+  saveTool('geometry', 'polygon', 'n=' + n + ', s=' + s)
+}
+function calcEllipse() {
+  const a = parseFloat(ellA.value)
+  const b = parseFloat(ellB.value)
+  if (!(a > 0) || !(b > 0) || !Number.isFinite(a) || !Number.isFinite(b)) { errors.ellipse = t('geo.err.rect'); results.ellipse = []; return }
+  errors.ellipse = ''
+  const per = Math.PI * (3 * (a + b) - Math.sqrt((3 * a + b) * (a + 3 * b)))
+  results.ellipse = [
+    { label: t('geo.area'), raw: Math.PI * a * b, unit: t(U2), formula: 'A = π × a × b' },
+    { label: t('geo.perimeter'), raw: per, unit: t(U), formula: 'P ≈ π[3(a+b) − √((3a+b)(a+3b))]' }
+  ]
+  saveTool('geometry', 'ellipse', 'a=' + a + ', b=' + b)
+}
+function calcSector() {
+  const r = parseFloat(secR.value)
+  const deg = parseFloat(secAngle.value)
+  if (!(r > 0) || !Number.isFinite(r)) { errors.sector = t('geo.err.r'); results.sector = []; return }
+  if (!(deg > 0) || deg > 360 || !Number.isFinite(deg)) { errors.sector = t('geo.err.angle'); results.sector = []; return }
+  errors.sector = ''
+  const frac = deg / 360
+  const arc = frac * 2 * Math.PI * r
+  const chord = 2 * r * Math.sin((deg / 2) * Math.PI / 180)
+  results.sector = [
+    { label: t('geo.area'), raw: frac * Math.PI * r * r, unit: t(U2), formula: 'A = (θ ÷ 360) × π × r²' },
+    { label: t('geo.arc'), raw: arc, unit: t(U), formula: 'L = (θ ÷ 360) × 2 × π × r' },
+    { label: t('geo.chord'), raw: chord, unit: t(U), formula: 'c = 2r × sin(θ ÷ 2)' },
+    { label: t('geo.perimeter'), raw: arc + 2 * r, unit: t(U), formula: 'P = L + 2r' }
+  ]
+  saveTool('geometry', 'sector', 'r=' + r + ', θ=' + deg + '°')
+}
+
+// ════════ مجسمات ثلاثية الأبعاد ════════
+function calcCube() {
+  const a = parseFloat(cubeA.value)
+  if (!(a > 0) || !Number.isFinite(a)) { errors.cube = t('geo.err.side'); results.cube = []; return }
+  errors.cube = ''
+  results.cube = [
+    { label: t('geo.volume'), raw: Math.pow(a, 3), unit: t(U3), formula: 'V = a³' },
+    { label: t('geo.surface'), raw: 6 * a * a, unit: t(U2), formula: 'S = 6 × a²' },
+    { label: t('geo.diagFace'), raw: a * Math.SQRT2, unit: t(U), formula: 'd = a × √2' },
+    { label: t('geo.diagSpace'), raw: a * Math.sqrt(3), unit: t(U), formula: 'D = a × √3' }
+  ]
+  saveTool('geometry', 'cube', 'a=' + a)
+}
+function calcCuboid() {
+  const l = parseFloat(cubL.value)
+  const w = parseFloat(cubW.value)
+  const h = parseFloat(cubH.value)
+  if (!(l > 0) || !(w > 0) || !(h > 0) || !Number.isFinite(l) || !Number.isFinite(w) || !Number.isFinite(h)) { errors.cuboid = t('geo.err.rect'); results.cuboid = []; return }
+  errors.cuboid = ''
+  results.cuboid = [
+    { label: t('geo.volume'), raw: l * w * h, unit: t(U3), formula: 'V = l × w × h' },
+    { label: t('geo.surface'), raw: 2 * (l * w + l * h + w * h), unit: t(U2), formula: 'S = 2(lw + lh + wh)' },
+    { label: t('geo.diagSpace'), raw: Math.sqrt(l * l + w * w + h * h), unit: t(U), formula: 'D = √(l² + w² + h²)' }
+  ]
+  saveTool('geometry', 'cuboid', 'l=' + l + ', w=' + w + ', h=' + h)
+}
+function calcCylinder() {
+  const r = parseFloat(cylR.value)
+  const h = parseFloat(cylH.value)
+  if (!(r > 0) || !(h > 0) || !Number.isFinite(r) || !Number.isFinite(h)) { errors.cylinder = t('geo.err.rect'); results.cylinder = []; return }
+  errors.cylinder = ''
+  results.cylinder = [
+    { label: t('geo.volume'), raw: Math.PI * r * r * h, unit: t(U3), formula: 'V = π × r² × h' },
+    { label: t('geo.lateral'), raw: 2 * Math.PI * r * h, unit: t(U2), formula: 'L = 2 × π × r × h' },
+    { label: t('geo.surface'), raw: 2 * Math.PI * r * (h + r), unit: t(U2), formula: 'S = 2 × π × r × (h + r)' }
+  ]
+  saveTool('geometry', 'cylinder', 'r=' + r + ', h=' + h)
+}
+function calcCone() {
+  const r = parseFloat(coneR.value)
+  const h = parseFloat(coneH.value)
+  if (!(r > 0) || !(h > 0) || !Number.isFinite(r) || !Number.isFinite(h)) { errors.cone = t('geo.err.rect'); results.cone = []; return }
+  errors.cone = ''
+  const l = Math.sqrt(r * r + h * h)
+  results.cone = [
+    { label: t('geo.slant'), raw: l, unit: t(U), formula: 'l = √(r² + h²)' },
+    { label: t('geo.volume'), raw: (1 / 3) * Math.PI * r * r * h, unit: t(U3), formula: 'V = (1/3) × π × r² × h' },
+    { label: t('geo.lateral'), raw: Math.PI * r * l, unit: t(U2), formula: 'L = π × r × l' },
+    { label: t('geo.surface'), raw: Math.PI * r * (l + r), unit: t(U2), formula: 'S = π × r × (l + r)' }
+  ]
+  saveTool('geometry', 'cone', 'r=' + r + ', h=' + h)
+}
 </script>
 
 <template>
@@ -193,7 +379,7 @@ function calcSphere() {
         :aria-selected="String(activeShape === sh.id)"
         :aria-controls="sh.id + '-panel'"
         @click="activeShape = sh.id"
-      >{{ sh.icon }} <span>{{ sh.label }}</span></button>
+      >{{ sh.icon }} <span>{{ L(sh.ar, sh.en) }}</span></button>
     </div>
 
     <div class="calc-layout calc-layout--ops">
@@ -349,6 +535,291 @@ function calcSphere() {
               <button type="button" class="btn-primary" @click="calc('sphere')">{{ L('احسب الكرة', 'Calculate sphere') }}</button>
             </div>
 
+            <!-- المعين -->
+            <div class="geo-panel" :class="{ active: activeShape === 'rhombus' }" id="rhombus-panel" role="tabpanel" :aria-label="L('حساب المعين', 'Rhombus calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 140 110" width="140" height="110" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('معين مع قطريه', 'Rhombus with its two diagonals')">
+                  <polygon points="70,12 128,55 70,98 12,55" fill="none" stroke="#22d3ee" stroke-width="2" stroke-dasharray="6 3" opacity="0.7"/>
+                  <line x1="12" y1="55" x2="128" y2="55" stroke="#a78bfa" stroke-width="1" opacity="0.45" stroke-dasharray="3 2"/>
+                  <line x1="70" y1="12" x2="70" y2="98" stroke="#a78bfa" stroke-width="1" opacity="0.45" stroke-dasharray="3 2"/>
+                  <text x="98" y="50" fill="#22d3ee" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">d₁</text>
+                  <text x="80" y="34" fill="#22d3ee" font-size="9" font-family="Cairo,sans-serif">d₂</text>
+                </svg>
+              </div>
+              <div class="formula-bar">A = (d₁ × d₂) ÷ 2 | P = 4 × a</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="rho-d1">{{ L('القطر الأول (d₁)', 'First diagonal (d₁)') }}</label>
+                  <input type="number" id="rho-d1" v-model="rhoD1" placeholder="8" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="rho-error" @keydown.enter.prevent="calc('rhombus')" />
+                </div>
+                <div class="input-group">
+                  <label for="rho-d2">{{ L('القطر الثاني (d₂)', 'Second diagonal (d₂)') }}</label>
+                  <input type="number" id="rho-d2" v-model="rhoD2" placeholder="6" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="rho-error" @keydown.enter.prevent="calc('rhombus')" />
+                </div>
+              </div>
+              <div id="rho-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.rhombus }}</div>
+              <button type="button" class="btn-primary" @click="calc('rhombus')">{{ L('احسب المعين', 'Calculate rhombus') }}</button>
+            </div>
+
+            <!-- متوازي الأضلاع -->
+            <div class="geo-panel" :class="{ active: activeShape === 'parallelogram' }" id="parallelogram-panel" role="tabpanel" :aria-label="L('حساب متوازي الأضلاع', 'Parallelogram calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 140 110" width="140" height="110" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('متوازي أضلاع بقاعدته وارتفاعه وضلعه', 'Parallelogram with its base, height and side')">
+                  <polygon points="30,92 130,92 110,22 10,22" fill="none" stroke="#f472b6" stroke-width="2" stroke-dasharray="6 3" opacity="0.7"/>
+                  <line x1="30" y1="92" x2="30" y2="22" stroke="#a78bfa" stroke-width="1" opacity="0.5" stroke-dasharray="3 2"/>
+                  <polyline points="30,78 44,78 44,92" fill="none" stroke="#a78bfa" stroke-width="1" opacity="0.5"/>
+                  <text x="80" y="106" fill="#f472b6" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">b</text>
+                  <text x="39" y="60" fill="#a78bfa" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">h</text>
+                  <text x="10" y="44" fill="#f472b6" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">a</text>
+                </svg>
+              </div>
+              <div class="formula-bar">A = b × h | P = 2 × (a + b)</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="par-b">{{ L('القاعدة (b)', 'Base (b)') }}</label>
+                  <input type="number" id="par-b" v-model="parB" placeholder="10" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="par-error" @keydown.enter.prevent="calc('parallelogram')" />
+                </div>
+                <div class="input-group">
+                  <label for="par-h">{{ L('الارتفاع (h)', 'Height (h)') }}</label>
+                  <input type="number" id="par-h" v-model="parH" placeholder="4" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="par-error" @keydown.enter.prevent="calc('parallelogram')" />
+                </div>
+                <div class="input-group">
+                  <label for="par-a">{{ L('الضلع الجانبي (a)', 'Side (a)') }}</label>
+                  <input type="number" id="par-a" v-model="parA" placeholder="6" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="par-error" @keydown.enter.prevent="calc('parallelogram')" />
+                </div>
+              </div>
+              <div id="par-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.parallelogram }}</div>
+              <button type="button" class="btn-primary" @click="calc('parallelogram')">{{ L('احسب متوازي الأضلاع', 'Calculate parallelogram') }}</button>
+            </div>
+
+            <!-- شبه المنحرف -->
+            <div class="geo-panel" :class="{ active: activeShape === 'trapezoid' }" id="trapezoid-panel" role="tabpanel" :aria-label="L('حساب شبه المنحرف', 'Trapezoid calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 140 110" width="140" height="110" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('شبه منحرف بقاعدتيه وارتفاعه وضلعيه', 'Trapezoid with its bases, height and legs')">
+                  <polygon points="20,92 120,92 96,22 44,22" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="6 3" opacity="0.7"/>
+                  <line x1="44" y1="22" x2="44" y2="92" stroke="#a78bfa" stroke-width="1" opacity="0.5" stroke-dasharray="3 2"/>
+                  <text x="70" y="106" fill="#fbbf24" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">a</text>
+                  <text x="70" y="16" fill="#fbbf24" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">b</text>
+                  <text x="37" y="60" fill="#a78bfa" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">h</text>
+                  <text x="22" y="58" fill="#fbbf24" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">c</text>
+                  <text x="116" y="58" fill="#fbbf24" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">d</text>
+                </svg>
+              </div>
+              <div class="formula-bar">A = ((a + b) ÷ 2) × h | m = (a + b) ÷ 2</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="trp-a">{{ L('القاعدة الكبرى (a)', 'Longer base (a)') }}</label>
+                  <input type="number" id="trp-a" v-model="trpA" placeholder="10" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="trp-error" @keydown.enter.prevent="calc('trapezoid')" />
+                </div>
+                <div class="input-group">
+                  <label for="trp-b">{{ L('القاعدة الصغرى (b)', 'Shorter base (b)') }}</label>
+                  <input type="number" id="trp-b" v-model="trpB" placeholder="6" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="trp-error" @keydown.enter.prevent="calc('trapezoid')" />
+                </div>
+                <div class="input-group">
+                  <label for="trp-h">{{ L('الارتفاع (h)', 'Height (h)') }}</label>
+                  <input type="number" id="trp-h" v-model="trpH" placeholder="4" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="trp-error" @keydown.enter.prevent="calc('trapezoid')" />
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="trp-c">{{ L('الضلع c (اختياري)', 'Side c (optional)') }}</label>
+                  <input type="number" id="trp-c" v-model="trpC" placeholder="5" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="trp-error" @keydown.enter.prevent="calc('trapezoid')" />
+                </div>
+                <div class="input-group">
+                  <label for="trp-d">{{ L('الضلع d (اختياري)', 'Side d (optional)') }}</label>
+                  <input type="number" id="trp-d" v-model="trpD" placeholder="5" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="trp-error" @keydown.enter.prevent="calc('trapezoid')" />
+                </div>
+              </div>
+              <div id="trp-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.trapezoid }}</div>
+              <button type="button" class="btn-primary" @click="calc('trapezoid')">{{ L('احسب شبه المنحرف', 'Calculate trapezoid') }}</button>
+            </div>
+
+            <!-- المضلع المنتظم -->
+            <div class="geo-panel" :class="{ active: activeShape === 'polygon' }" id="polygon-panel" role="tabpanel" :aria-label="L('حساب المضلع المنتظم', 'Regular polygon calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 140 110" width="140" height="110" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('مضلع منتظم سداسي مع ضلعه وعاموده', 'Regular hexagon with its side and apothem')">
+                  <polygon points="70,10 109,33 109,78 70,100 31,78 31,33" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-dasharray="6 3" opacity="0.7"/>
+                  <line x1="70" y1="55" x2="109" y2="33" stroke="#a78bfa" stroke-width="1" opacity="0.5" stroke-dasharray="3 2"/>
+                  <line x1="70" y1="10" x2="70" y2="100" stroke="#a78bfa" stroke-width="1" opacity="0.3" stroke-dasharray="3 2"/>
+                  <circle cx="70" cy="55" r="2.5" fill="#a78bfa"/>
+                  <text x="120" y="58" fill="#2dd4bf" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">s</text>
+                  <text x="99" y="40" fill="#a78bfa" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">r</text>
+                </svg>
+              </div>
+              <div class="formula-bar">A = (n × s²) ÷ (4 tan(π/n)) | P = n × s</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="poly-n">{{ L('عدد الأضلاع (n)', 'Number of sides (n)') }}</label>
+                  <input type="number" id="poly-n" v-model="polyN" placeholder="6" min="3" step="1" inputmode="numeric" autocomplete="off" aria-describedby="poly-error" @keydown.enter.prevent="calc('polygon')" />
+                </div>
+                <div class="input-group">
+                  <label for="poly-s">{{ L('طول الضلع (s)', 'Side length (s)') }}</label>
+                  <input type="number" id="poly-s" v-model="polyS" placeholder="5" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="poly-error" @keydown.enter.prevent="calc('polygon')" />
+                </div>
+              </div>
+              <div id="poly-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.polygon }}</div>
+              <button type="button" class="btn-primary" @click="calc('polygon')">{{ L('احسب المضلع', 'Calculate polygon') }}</button>
+            </div>
+
+            <!-- القطع الناقص -->
+            <div class="geo-panel" :class="{ active: activeShape === 'ellipse' }" id="ellipse-panel" role="tabpanel" :aria-label="L('حساب القطع الناقص', 'Ellipse calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 140 110" width="140" height="110" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('قطع ناقص مع نصف محوره الأكبر والأصغر', 'Ellipse with its semi-major and semi-minor axes')">
+                  <ellipse cx="70" cy="55" rx="56" ry="34" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.7"/>
+                  <line x1="14" y1="55" x2="126" y2="55" stroke="#a78bfa" stroke-width="1" opacity="0.5" stroke-dasharray="3 2"/>
+                  <line x1="70" y1="21" x2="70" y2="89" stroke="#a78bfa" stroke-width="1" opacity="0.5" stroke-dasharray="3 2"/>
+                  <circle cx="70" cy="55" r="2.5" fill="#60a5fa"/>
+                  <text x="99" y="50" fill="#60a5fa" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">a</text>
+                  <text x="80" y="35" fill="#60a5fa" font-size="9" font-family="Cairo,sans-serif">b</text>
+                </svg>
+              </div>
+              <div class="formula-bar">A = π × a × b | P ≈ π[3(a+b) − √((3a+b)(a+3b))]</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="ell-a">{{ L('نصف المحور الأكبر (a)', 'Semi-major axis (a)') }}</label>
+                  <input type="number" id="ell-a" v-model="ellA" placeholder="8" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="ell-error" @keydown.enter.prevent="calc('ellipse')" />
+                </div>
+                <div class="input-group">
+                  <label for="ell-b">{{ L('نصف المحور الأصغر (b)', 'Semi-minor axis (b)') }}</label>
+                  <input type="number" id="ell-b" v-model="ellB" placeholder="5" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="ell-error" @keydown.enter.prevent="calc('ellipse')" />
+                </div>
+              </div>
+              <div id="ell-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.ellipse }}</div>
+              <button type="button" class="btn-primary" @click="calc('ellipse')">{{ L('احسب القطع الناقص', 'Calculate ellipse') }}</button>
+            </div>
+
+            <!-- القطاع الدائري -->
+            <div class="geo-panel" :class="{ active: activeShape === 'sector' }" id="sector-panel" role="tabpanel" :aria-label="L('حساب القطاع الدائري', 'Sector calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 140 110" width="140" height="110" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('قطاع دائري بزاويته ونصف قطره', 'Circular sector with its angle and radius')">
+                  <path d="M60,90 L60,30 A60,60 0 0,1 111.96,60 Z" fill="none" stroke="#fb7185" stroke-width="2" stroke-dasharray="6 3" opacity="0.75"/>
+                  <circle cx="60" cy="90" r="2.5" fill="#fb7185"/>
+                  <path d="M60,72 A18,18 0 0,1 75.6,81 Z" fill="none" stroke="#a78bfa" stroke-width="1" opacity="0.6"/>
+                  <text x="53" y="58" fill="#fb7185" font-size="9" font-family="Cairo,sans-serif" text-anchor="end">r</text>
+                  <text x="72" y="84" fill="#a78bfa" font-size="9" font-family="Cairo,sans-serif">θ</text>
+                </svg>
+              </div>
+              <div class="formula-bar">A = (θ ÷ 360) × π × r² | L = (θ ÷ 360) × 2 × π × r</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="sec-r">{{ L('نصف القطر (r)', 'Radius (r)') }}</label>
+                  <input type="number" id="sec-r" v-model="secR" placeholder="6" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="sec-error" @keydown.enter.prevent="calc('sector')" />
+                </div>
+                <div class="input-group">
+                  <label for="sec-angle">{{ L('الزاوية (بالدرجات)', 'Angle (degrees)') }}</label>
+                  <input type="number" id="sec-angle" v-model="secAngle" placeholder="90" min="0" max="360" step="any" inputmode="decimal" autocomplete="off" aria-describedby="sec-error" @keydown.enter.prevent="calc('sector')" />
+                </div>
+              </div>
+              <div id="sec-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.sector }}</div>
+              <button type="button" class="btn-primary" @click="calc('sector')">{{ L('احسب القطاع', 'Calculate sector') }}</button>
+            </div>
+
+            <!-- المكعب -->
+            <div class="geo-panel" :class="{ active: activeShape === 'cube' }" id="cube-panel" role="tabpanel" :aria-label="L('حساب المكعب', 'Cube calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 130 122" width="130" height="122" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('مكعب مع ضلعه', 'Cube with its side')">
+                  <polygon points="30,45 90,45 90,105 30,105" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.65"/>
+                  <polygon points="30,45 55,25 115,25 90,45" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.45"/>
+                  <polygon points="90,45 115,25 115,85 90,105" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.45"/>
+                  <text x="60" y="119" fill="#38bdf8" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">a</text>
+                </svg>
+              </div>
+              <div class="formula-bar">V = a³ | S = 6 × a² | D = a × √3</div>
+              <div class="input-group">
+                <label for="cube-a">{{ L('طول الضلع (a)', 'Side length (a)') }}</label>
+                <input type="number" id="cube-a" v-model="cubeA" placeholder="3" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="cube-error" @keydown.enter.prevent="calc('cube')" />
+                <div id="cube-error" class="error-msg" role="alert" aria-live="polite">{{ errors.cube }}</div>
+              </div>
+              <button type="button" class="btn-primary" @click="calc('cube')">{{ L('احسب المكعب', 'Calculate cube') }}</button>
+            </div>
+
+            <!-- متوازي المستطيلات -->
+            <div class="geo-panel" :class="{ active: activeShape === 'cuboid' }" id="cuboid-panel" role="tabpanel" :aria-label="L('حساب متوازي المستطيلات', 'Cuboid calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 140 125" width="140" height="125" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('متوازي مستطيلات بأبعاده الثلاثة', 'Cuboid with its three dimensions')">
+                  <polygon points="25,55 95,55 95,110 25,110" fill="none" stroke="#818cf8" stroke-width="2" opacity="0.65"/>
+                  <polygon points="25,55 55,30 125,30 95,55" fill="none" stroke="#818cf8" stroke-width="2" opacity="0.45"/>
+                  <polygon points="95,55 125,30 125,85 95,110" fill="none" stroke="#818cf8" stroke-width="2" opacity="0.45"/>
+                  <text x="60" y="122" fill="#818cf8" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">l</text>
+                  <text x="112" y="85" fill="#818cf8" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">h</text>
+                  <text x="40" y="41" fill="#818cf8" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">w</text>
+                </svg>
+              </div>
+              <div class="formula-bar">V = l × w × h | S = 2(lw + lh + wh) | D = √(l² + w² + h²)</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="cub-l">{{ L('الطول (l)', 'Length (l)') }}</label>
+                  <input type="number" id="cub-l" v-model="cubL" placeholder="8" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="cub-error" @keydown.enter.prevent="calc('cuboid')" />
+                </div>
+                <div class="input-group">
+                  <label for="cub-w">{{ L('العرض (w)', 'Width (w)') }}</label>
+                  <input type="number" id="cub-w" v-model="cubW" placeholder="5" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="cub-error" @keydown.enter.prevent="calc('cuboid')" />
+                </div>
+                <div class="input-group">
+                  <label for="cub-h">{{ L('الارتفاع (h)', 'Height (h)') }}</label>
+                  <input type="number" id="cub-h" v-model="cubH" placeholder="4" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="cub-error" @keydown.enter.prevent="calc('cuboid')" />
+                </div>
+              </div>
+              <div id="cub-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.cuboid }}</div>
+              <button type="button" class="btn-primary" @click="calc('cuboid')">{{ L('احسب متوازي المستطيلات', 'Calculate cuboid') }}</button>
+            </div>
+
+            <!-- الأسطوانة -->
+            <div class="geo-panel" :class="{ active: activeShape === 'cylinder' }" id="cylinder-panel" role="tabpanel" :aria-label="L('حساب الأسطوانة', 'Cylinder calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 140 120" width="140" height="120" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('أسطوانة بنصف قطرها وارتفاعها', 'Cylinder with its radius and height')">
+                  <ellipse cx="70" cy="28" rx="44" ry="14" fill="none" stroke="#c084fc" stroke-width="2" opacity="0.7"/>
+                  <path d="M26,28 L26,92 A44,14 0 0,0 114,92 L114,28" fill="none" stroke="#c084fc" stroke-width="2" opacity="0.7"/>
+                  <line x1="70" y1="28" x2="114" y2="28" stroke="#a78bfa" stroke-width="1" opacity="0.55" stroke-dasharray="3 2"/>
+                  <circle cx="70" cy="28" r="2.5" fill="#c084fc"/>
+                  <text x="93" y="24" fill="#c084fc" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">r</text>
+                  <text x="17" y="63" fill="#c084fc" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">h</text>
+                </svg>
+              </div>
+              <div class="formula-bar">V = π × r² × h | L = 2 × π × r × h | S = 2 × π × r × (h + r)</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="cyl-r">{{ L('نصف القطر (r)', 'Radius (r)') }}</label>
+                  <input type="number" id="cyl-r" v-model="cylR" placeholder="3" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="cyl-error" @keydown.enter.prevent="calc('cylinder')" />
+                </div>
+                <div class="input-group">
+                  <label for="cyl-h">{{ L('الارتفاع (h)', 'Height (h)') }}</label>
+                  <input type="number" id="cyl-h" v-model="cylH" placeholder="7" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="cyl-error" @keydown.enter.prevent="calc('cylinder')" />
+                </div>
+              </div>
+              <div id="cyl-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.cylinder }}</div>
+              <button type="button" class="btn-primary" @click="calc('cylinder')">{{ L('احسب الأسطوانة', 'Calculate cylinder') }}</button>
+            </div>
+
+            <!-- المخروط -->
+            <div class="geo-panel" :class="{ active: activeShape === 'cone' }" id="cone-panel" role="tabpanel" :aria-label="L('حساب المخروط', 'Cone calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 140 122" width="140" height="122" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('مخروط بنصف قطر قاعدته وارتفاعه وارتفاعه الجانبي', 'Cone with its base radius, height and slant height')">
+                  <ellipse cx="70" cy="95" rx="46" ry="14" fill="none" stroke="#f59e0b" stroke-width="1.5" opacity="0.5"/>
+                  <path d="M70,15 L24,95 A46,14 0 0,0 116,95 Z" fill="none" stroke="#f59e0b" stroke-width="2" opacity="0.75"/>
+                  <line x1="70" y1="15" x2="70" y2="95" stroke="#a78bfa" stroke-width="1" opacity="0.55" stroke-dasharray="3 2"/>
+                  <line x1="70" y1="95" x2="116" y2="95" stroke="#a78bfa" stroke-width="1" opacity="0.5" stroke-dasharray="3 2"/>
+                  <circle cx="70" cy="95" r="2.5" fill="#f59e0b"/>
+                  <text x="63" y="58" fill="#a78bfa" font-size="9" font-family="Cairo,sans-serif" text-anchor="end">h</text>
+                  <text x="95" y="110" fill="#f59e0b" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">r</text>
+                  <text x="38" y="52" fill="#f59e0b" font-size="9" font-family="Cairo,sans-serif" text-anchor="end">l</text>
+                </svg>
+              </div>
+              <div class="formula-bar">V = (1/3) × π × r² × h | l = √(r² + h²) | S = π × r × (l + r)</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="cone-r">{{ L('نصف القطر (r)', 'Radius (r)') }}</label>
+                  <input type="number" id="cone-r" v-model="coneR" placeholder="3" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="cone-error" @keydown.enter.prevent="calc('cone')" />
+                </div>
+                <div class="input-group">
+                  <label for="cone-h">{{ L('الارتفاع (h)', 'Height (h)') }}</label>
+                  <input type="number" id="cone-h" v-model="coneH" placeholder="4" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="cone-error" @keydown.enter.prevent="calc('cone')" />
+                </div>
+              </div>
+              <div id="cone-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.cone }}</div>
+              <button type="button" class="btn-primary" @click="calc('cone')">{{ L('احسب المخروط', 'Calculate cone') }}</button>
+            </div>
+
           </div>
         </section>
       </div>
@@ -383,20 +854,7 @@ function calcSphere() {
                   </div>
                 </div>
               </template>
-              <p v-else class="res-empty">{{ L(
-                sh.id === 'circle' ? 'اكتب نصف القطر وستظهر النتائج هنا.' :
-                sh.id === 'square' ? 'اكتب طول الضلع وستظهر النتائج هنا.' :
-                sh.id === 'rect' ? 'اكتب العرض والارتفاع وستظهر النتائج هنا.' :
-                sh.id === 'triangle' ? 'اكتب الأضلاع الثلاثة وستظهر النتائج هنا.' :
-                sh.id === 'right' ? 'اكتب ضلعين (ساقين أو وتراً وساقاً) وستظهر النتائج هنا.' :
-                'اكتب نصف القطر وستظهر النتائج هنا.',
-                sh.id === 'circle' ? 'Type the radius and the results appear here.' :
-                sh.id === 'square' ? 'Type the side length and the results appear here.' :
-                sh.id === 'rect' ? 'Type the width and height and the results appear here.' :
-                sh.id === 'triangle' ? 'Type the three sides and the results appear here.' :
-                sh.id === 'right' ? 'Type any two sides (two legs, or the hypotenuse and a leg) and the results appear here.' :
-                'Type the radius and the results appear here.'
-              ) }}</p>
+              <p v-else class="res-empty">{{ t('geo.empty.' + sh.id) }}</p>
             </div>
           </div>
         </section>
