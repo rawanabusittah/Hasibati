@@ -8,7 +8,7 @@
 [![Vue 3](https://img.shields.io/badge/Vue-3.x-42b883?logo=vuedotjs&logoColor=white)](https://vuejs.org)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
 [![Vitest](https://img.shields.io/badge/tested%20with-Vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev)
-[![Tests](https://img.shields.io/badge/tests-212%20passing-brightgreen)](#-الاختبارات--tests)
+[![Tests](https://img.shields.io/badge/tests-217%20passing-brightgreen)](#-الاختبارات--tests)
 [![i18n](https://img.shields.io/badge/i18n-AR%20%2F%20EN-blue)](#-الميزات--features)
 [![Supabase](https://img.shields.io/badge/Supabase-optional-3FCF8E?logo=supabase&logoColor=white)](#-supabase-اختياري)
 [![PWA](https://img.shields.io/badge/PWA-installable%20%C2%B7%20offline-5A0FC8?logo=pwa&logoColor=white)](#-pwa-قابل-للتثبيت--offline)
@@ -213,7 +213,7 @@ npm run test:watch # الاختبارات في وضع المراقبة
 
 ## 🧪 الاختبارات · Tests
 
-يفحص المشروع صحّة **محرّك الحساب** و**محوّل الأنظمة** و**الأعداد المركبة** و**المتراجحات** و**خطوات الحل** و**الهندسة** و**محرّك الحاسبة النقي**، ثم يركّب **المكوّنات وصفحتَي الآلة الحاسبة والهندسة** كاملتين (أحداث + حالة + تبديل اللغة) — بأكثر من **210 اختبارًا**:
+يفحص المشروع صحّة **محرّك الحساب** و**محوّل الأنظمة** و**الأعداد المركبة** و**المتراجحات** و**خطوات الحل** و**الهندسة** و**محرّك الحاسبة النقي**، ثم يركّب **المكوّنات وصفحتَي الآلة الحاسبة والهندسة** كاملتين (أحداث + حالة + تبديل اللغة) مع **صفحة استعادة كلمة المرور** — بأكثر من **215 اختبارًا**:
 
 ```bash
 npm test
@@ -226,13 +226,14 @@ npm test
  ✓ tests/complex.test.js        (20 tests)
  ✓ tests/core.test.js           (21 tests)
  ✓ tests/geometry.test.js       (41 tests)
- ✓ tests/calc.test.js           (36 tests)
+ ✓ tests/calc.test.js           (37 tests)
  ✓ tests/components.test.js     (30 tests)
  ✓ tests/geometry-view.test.js  (13 tests)
- ✓ tests/calculator-view.test.js (17 tests)
+ ✓ tests/calculator-view.test.js (18 tests)
+ ✓ tests/auth-views.test.js      (3 tests)
 
- Test Files  10 passed (10)
-      Tests  212 passed (212)
+ Test Files  11 passed (11)
+      Tests  217 passed (217)
 ```
 
 ---
@@ -267,7 +268,7 @@ npm test
 
 - [x] نشر مباشر على GitHub Pages + رابط تجربة في الأعلى.
 - [x] اختبارات الوحدة داخل CI (GitHub Actions).
-- [x] اختبارات المكوّنات والتكامل: تركيب المكوّنات وصفحتَي الحاسبة والهندسة (أحداث + سجلّ محلي + تبديل اللغة).
+- [x] اختبارات المكوّنات والتكامل: تركيب المكوّنات وصفحتَي الحاسبة والهندسة (أحداث + سجلّ محلي + تبديل اللغة) وصفحة استعادة كلمة المرور.
 - [ ] تغطية إضافية: مسارات المصادقة وواجهة الشبكة (Supabase) بلقطات شاشة آلية.
 - [x] PWA يعمل دون اتصال وقابل للتثبيت.
 - [x] مراجعة إتاحة الوصول (a11y) — Lighthouse 100 للمسارات الرئيسية.
