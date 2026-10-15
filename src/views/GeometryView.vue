@@ -51,33 +51,46 @@ const prmN = ref('')
 const prmS = ref('')
 const prmH = ref('')
 const hemiR = ref('')
+const ocR = ref('')
+const ocH = ref('')
+const ocT = ref('')
+const frR1 = ref('')
+const frR2 = ref('')
+const frH = ref('')
+const obA = ref('')
+const obB = ref('')
+const obC = ref('')
+const obT = ref('')
 
 // حالة توسيع شريط الأشكال (سطر واحد افتراضياً + زر «المزيد»)
 const shapesExpanded = ref(false)
 
-const errors = reactive({ circle: '', square: '', rect: '', triangle: '', right: '', sphere: '', rhombus: '', parallelogram: '', trapezoid: '', polygon: '', ellipse: '', sector: '', cube: '', cuboid: '', cylinder: '', cone: '', pyramid: '', prism: '', hemisphere: '' })
-const results = reactive({ circle: [], square: [], rect: [], triangle: [], right: [], sphere: [], rhombus: [], parallelogram: [], trapezoid: [], polygon: [], ellipse: [], sector: [], cube: [], cuboid: [], cylinder: [], cone: [], pyramid: [], prism: [], hemisphere: [] })
+const errors = reactive({ circle: '', square: '', rect: '', triangle: '', right: '', sphere: '', rhombus: '', parallelogram: '', trapezoid: '', polygon: '', ellipse: '', sector: '', cube: '', cuboid: '', cylinder: '', cone: '', pyramid: '', prism: '', hemisphere: '', obliqueCylinder: '', frustum: '', obliqueBox: '' })
+const results = reactive({ circle: [], square: [], rect: [], triangle: [], right: [], sphere: [], rhombus: [], parallelogram: [], trapezoid: [], polygon: [], ellipse: [], sector: [], cube: [], cuboid: [], cylinder: [], cone: [], pyramid: [], prism: [], hemisphere: [], obliqueCylinder: [], frustum: [], obliqueBox: [] })
 
 const shapes = [
-  { id: 'circle', ar: 'الدائرة', en: 'Circle', icon: '⭕' },
-  { id: 'square', ar: 'المربع', en: 'Square', icon: '🟦' },
-  { id: 'rect', ar: 'المستطيل', en: 'Rectangle', icon: '▬' },
-  { id: 'triangle', ar: 'المثلث', en: 'Triangle', icon: '🔺' },
-  { id: 'right', ar: 'المثلث القائم', en: 'Right triangle', icon: '📐' },
-  { id: 'rhombus', ar: 'المعين', en: 'Rhombus', icon: '🔷' },
-  { id: 'parallelogram', ar: 'متوازي الأضلاع', en: 'Parallelogram', icon: '⬛' },
-  { id: 'trapezoid', ar: 'شبه المنحرف', en: 'Trapezoid', icon: '⏢' },
-  { id: 'polygon', ar: 'المضلع المنتظم', en: 'Regular polygon', icon: '⬡' },
-  { id: 'ellipse', ar: 'القطع الناقص', en: 'Ellipse', icon: '🥚' },
-  { id: 'sector', ar: 'القطاع الدائري', en: 'Sector', icon: '🍕' },
-  { id: 'sphere', ar: 'الكرة', en: 'Sphere', icon: '🔵' },
-  { id: 'hemisphere', ar: 'شبه الكرة', en: 'Hemisphere', icon: '🌗' },
-  { id: 'cube', ar: 'المكعب', en: 'Cube', icon: '🧊' },
-  { id: 'cuboid', ar: 'متوازي المستطيلات', en: 'Cuboid', icon: '📦' },
-  { id: 'cylinder', ar: 'الأسطوانة', en: 'Cylinder', icon: '🛢️' },
-  { id: 'cone', ar: 'المخروط', en: 'Cone', icon: '🍦' },
-  { id: 'pyramid', ar: 'الهرم', en: 'Pyramid', icon: '⛰️' },
-  { id: 'prism', ar: 'المنشور', en: 'Prism', icon: '🌈' }
+  { id: 'circle', ar: 'الدائرة', en: 'Circle' },
+  { id: 'square', ar: 'المربع', en: 'Square' },
+  { id: 'rect', ar: 'المستطيل', en: 'Rectangle' },
+  { id: 'triangle', ar: 'المثلث', en: 'Triangle' },
+  { id: 'right', ar: 'المثلث القائم', en: 'Right triangle' },
+  { id: 'rhombus', ar: 'المعين', en: 'Rhombus' },
+  { id: 'parallelogram', ar: 'متوازي الأضلاع', en: 'Parallelogram' },
+  { id: 'trapezoid', ar: 'شبه المنحرف', en: 'Trapezoid' },
+  { id: 'polygon', ar: 'المضلع المنتظم', en: 'Regular polygon' },
+  { id: 'ellipse', ar: 'القطع الناقص', en: 'Ellipse' },
+  { id: 'sector', ar: 'القطاع الدائري', en: 'Sector' },
+  { id: 'sphere', ar: 'الكرة', en: 'Sphere' },
+  { id: 'hemisphere', ar: 'شبه الكرة', en: 'Hemisphere' },
+  { id: 'cube', ar: 'المكعب', en: 'Cube' },
+  { id: 'cuboid', ar: 'متوازي المستطيلات', en: 'Cuboid' },
+  { id: 'cylinder', ar: 'الأسطوانة', en: 'Cylinder' },
+  { id: 'cone', ar: 'المخروط', en: 'Cone' },
+  { id: 'obliqueCylinder', ar: 'الأسطوانة المائلة', en: 'Oblique cylinder' },
+  { id: 'pyramid', ar: 'الهرم', en: 'Pyramid' },
+  { id: 'prism', ar: 'المنشور', en: 'Prism' },
+  { id: 'frustum', ar: 'المخروط الناقص', en: 'Cone frustum' },
+  { id: 'obliqueBox', ar: 'متوازي السطوح المائل', en: 'Oblique box' }
 ]
 
 const U2 = 'geo.unit2', U3 = 'geo.unit3', U = 'geo.unit'
@@ -118,6 +131,9 @@ function calc(shape) {
     case 'hemisphere': return calcHemisphere()
     case 'pyramid': return calcPyramid()
     case 'prism': return calcPrism()
+    case 'obliqueCylinder': return calcObliqueCylinder()
+    case 'frustum': return calcFrustum()
+    case 'obliqueBox': return calcObliqueBox()
   }
 }
 
@@ -423,6 +439,71 @@ function calcPrism() {
   ]
   saveTool('geometry', 'prism', 'n=' + n + ', s=' + s + ', h=' + h)
 }
+function calcObliqueCylinder() {
+  const r = parseFloat(ocR.value)
+  const h = parseFloat(ocH.value)
+  const th = parseFloat(ocT.value)
+  if (!(r > 0) || !(h > 0) || !Number.isFinite(r) || !Number.isFinite(h)) { errors.obliqueCylinder = t('geo.err.rect'); results.obliqueCylinder = []; return }
+  if (!(th > 0) || !(th < 90) || !Number.isFinite(th)) { errors.obliqueCylinder = t('geo.err.tilt'); results.obliqueCylinder = []; return }
+  errors.obliqueCylinder = ''
+  const rad = th * Math.PI / 180
+  const gen = h / Math.sin(rad)
+  const baseArea = Math.PI * r * r
+  const lateral = 2 * Math.PI * r * gen
+  results.obliqueCylinder = [
+    { label: t('geo.volume'), raw: baseArea * h, unit: t(U3), formula: 'V = π × r² × h' },
+    { label: t('geo.baseArea'), raw: baseArea, unit: t(U2), formula: 'Aᵦ = π × r²' },
+    { label: t('geo.generatrix'), raw: gen, unit: t(U), formula: 'l = h ÷ sin θ' },
+    { label: t('geo.offset'), raw: h / Math.tan(rad), unit: t(U), formula: 'd = h ÷ tan θ' },
+    { label: t('geo.lateral'), raw: lateral, unit: t(U2), formula: 'L = 2 × π × r × l' },
+    { label: t('geo.surface'), raw: 2 * baseArea + lateral, unit: t(U2), formula: 'S = 2 × π × r² + L' }
+  ]
+  saveTool('geometry', 'obliqueCylinder', 'r=' + r + ', h=' + h + ', θ=' + th)
+}
+function calcFrustum() {
+  const r1 = parseFloat(frR1.value)
+  const r2 = parseFloat(frR2.value)
+  const h = parseFloat(frH.value)
+  if (!(r1 > 0) || !(r2 > 0) || !(h > 0) || !Number.isFinite(r1) || !Number.isFinite(r2) || !Number.isFinite(h)) { errors.frustum = t('geo.err.rect'); results.frustum = []; return }
+  errors.frustum = ''
+  const dr = r1 - r2
+  const slant = Math.sqrt(h * h + dr * dr)
+  const A1 = Math.PI * r1 * r1
+  const A2 = Math.PI * r2 * r2
+  const lateral = Math.PI * (r1 + r2) * slant
+  results.frustum = [
+    { label: t('geo.volume'), raw: (Math.PI * h / 3) * (r1 * r1 + r1 * r2 + r2 * r2), unit: t(U3), formula: 'V = (π × h ÷ 3)(r₁² + r₁r₂ + r₂²)' },
+    { label: t('geo.slant'), raw: slant, unit: t(U), formula: 'l = √(h² + (r₁ − r₂)²)' },
+    { label: t('geo.lateral'), raw: lateral, unit: t(U2), formula: 'L = π × (r₁ + r₂) × l' },
+    { label: t('geo.baseAreaBig'), raw: A1, unit: t(U2), formula: 'A₁ = π × r₁²' },
+    { label: t('geo.baseAreaSmall'), raw: A2, unit: t(U2), formula: 'A₂ = π × r₂²' },
+    { label: t('geo.surface'), raw: A1 + A2 + lateral, unit: t(U2), formula: 'S = A₁ + A₂ + L' }
+  ]
+  saveTool('geometry', 'frustum', 'r1=' + r1 + ', r2=' + r2 + ', h=' + h)
+}
+function calcObliqueBox() {
+  const a = parseFloat(obA.value)
+  const b = parseFloat(obB.value)
+  const c = parseFloat(obC.value)
+  const th = parseFloat(obT.value)
+  if (!(a > 0) || !(b > 0) || !(c > 0) || !Number.isFinite(a) || !Number.isFinite(b) || !Number.isFinite(c)) { errors.obliqueBox = t('geo.err.rect'); results.obliqueBox = []; return }
+  if (!(th > 0) || !(th < 90) || !Number.isFinite(th)) { errors.obliqueBox = t('geo.err.tilt'); results.obliqueBox = []; return }
+  errors.obliqueBox = ''
+  const rad = th * Math.PI / 180
+  const sin = Math.sin(rad)
+  const hgt = c * sin
+  const baseArea = a * b
+  const lateral = 2 * b * c + 2 * a * c * sin
+  results.obliqueBox = [
+    { label: t('geo.volume'), raw: baseArea * hgt, unit: t(U3), formula: 'V = a × b × h' },
+    { label: t('geo.baseArea'), raw: baseArea, unit: t(U2), formula: 'Aᵦ = a × b' },
+    { label: t('geo.vertHeight'), raw: hgt, unit: t(U), formula: 'h = c × sin θ' },
+    { label: t('geo.offset'), raw: c * Math.cos(rad), unit: t(U), formula: 'd = c × cos θ' },
+    { label: t('geo.lateral'), raw: lateral, unit: t(U2), formula: 'L = 2b·c + 2a·c·sin θ' },
+    { label: t('geo.surface'), raw: 2 * baseArea + lateral, unit: t(U2), formula: 'S = 2(a·b + b·c + a·c·sin θ)' }
+  ]
+  saveTool('geometry', 'obliqueBox', 'a=' + a + ', b=' + b + ', c=' + c + ', θ=' + th)
+}
 </script>
 
 <template>
@@ -446,7 +527,7 @@ function calcPrism() {
           :aria-selected="String(activeShape === sh.id)"
           :aria-controls="sh.id + '-panel'"
           @click="activeShape = sh.id"
-        >{{ sh.icon }} <span>{{ L(sh.ar, sh.en) }}</span></button>
+        ><span>{{ L(sh.ar, sh.en) }}</span></button>
       </div>
       <button type="button" class="geo-more" :aria-expanded="String(shapesExpanded)" @click="shapesExpanded = !shapesExpanded">
         {{ shapesExpanded ? L('أقل ▲', 'Less ▲') : L('المزيد ▼', 'More ▼') }}
@@ -971,6 +1052,115 @@ function calcPrism() {
               </div>
               <div id="prm-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.prism }}</div>
               <button type="button" class="btn-primary" @click="calc('prism')">{{ L('احسب المنشور', 'Calculate prism') }}</button>
+            </div>
+
+            <!-- الأسطوانة المائلة -->
+            <div class="geo-panel" :class="{ active: activeShape === 'obliqueCylinder' }" id="obliqueCylinder-panel" role="tabpanel" :aria-label="L('حساب الأسطوانة المائلة', 'Oblique cylinder calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 150 120" width="150" height="120" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('أسطوانة مائلة مع ارتفاعها العمودي وزاوية ميلها', 'Oblique cylinder with its perpendicular height and tilt angle')">
+                  <ellipse cx="55" cy="95" rx="38" ry="12" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.7"/>
+                  <ellipse cx="85" cy="30" rx="38" ry="12" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.7"/>
+                  <line x1="17" y1="95" x2="47" y2="30" stroke="#60a5fa" stroke-width="2" opacity="0.7"/>
+                  <line x1="93" y1="95" x2="123" y2="30" stroke="#60a5fa" stroke-width="2" opacity="0.7"/>
+                  <line x1="85" y1="30" x2="85" y2="95" stroke="#a78bfa" stroke-width="1.5" opacity="0.6" stroke-dasharray="4 3"/>
+                  <line x1="85" y1="30" x2="55" y2="95" stroke="#a78bfa" stroke-width="1" opacity="0.4" stroke-dasharray="3 2"/>
+                  <circle cx="85" cy="95" r="2" fill="#a78bfa"/>
+                  <text x="92" y="66" fill="#a78bfa" font-size="9" font-family="Cairo,sans-serif">h</text>
+                  <text x="58" y="112" fill="#60a5fa" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">2r</text>
+                </svg>
+              </div>
+              <div class="formula-bar">V = π × r² × h | L = 2 × π × r × l</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="oc-r">{{ L('نصف القطر (r)', 'Radius (r)') }}</label>
+                  <input type="number" id="oc-r" v-model="ocR" placeholder="3" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="oc-error" @keydown.enter.prevent="calc('obliqueCylinder')" />
+                </div>
+                <div class="input-group">
+                  <label for="oc-h">{{ L('الارتفاع العمودي (h)', 'Perpendicular height (h)') }}</label>
+                  <input type="number" id="oc-h" v-model="ocH" placeholder="5" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="oc-error" @keydown.enter.prevent="calc('obliqueCylinder')" />
+                </div>
+                <div class="input-group">
+                  <label for="oc-t">{{ L('زاوية الميل عن القاعدة (θ°)', 'Tilt from the base (θ°)') }}</label>
+                  <input type="number" id="oc-t" v-model="ocT" placeholder="60" min="0" max="90" step="any" inputmode="decimal" autocomplete="off" aria-describedby="oc-error" @keydown.enter.prevent="calc('obliqueCylinder')" />
+                </div>
+              </div>
+              <div id="oc-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.obliqueCylinder }}</div>
+              <button type="button" class="btn-primary" @click="calc('obliqueCylinder')">{{ L('احسب الأسطوانة المائلة', 'Calculate oblique cylinder') }}</button>
+            </div>
+
+            <!-- المخروط الناقص -->
+            <div class="geo-panel" :class="{ active: activeShape === 'frustum' }" id="frustum-panel" role="tabpanel" :aria-label="L('حساب المخروط الناقص', 'Cone frustum calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 150 120" width="150" height="120" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('مخروط ناقص بقاعدتيه وارتفاعه', 'Cone frustum with its two bases and height')">
+                  <ellipse cx="70" cy="95" rx="42" ry="13" fill="none" stroke="#f59e0b" stroke-width="2" opacity="0.7"/>
+                  <ellipse cx="70" cy="30" rx="22" ry="8" fill="none" stroke="#f59e0b" stroke-width="2" opacity="0.7"/>
+                  <line x1="28" y1="95" x2="48" y2="30" stroke="#f59e0b" stroke-width="2" opacity="0.7"/>
+                  <line x1="112" y1="95" x2="92" y2="30" stroke="#f59e0b" stroke-width="2" opacity="0.7"/>
+                  <line x1="70" y1="30" x2="70" y2="95" stroke="#a78bfa" stroke-width="1.5" opacity="0.6" stroke-dasharray="4 3"/>
+                  <circle cx="70" cy="95" r="2" fill="#a78bfa"/>
+                  <text x="77" y="66" fill="#a78bfa" font-size="9" font-family="Cairo,sans-serif">h</text>
+                  <text x="46" y="26" fill="#f59e0b" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">r₂</text>
+                  <text x="70" y="114" fill="#f59e0b" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">2r₁</text>
+                </svg>
+              </div>
+              <div class="formula-bar">V = (π × h ÷ 3)(r₁² + r₁r₂ + r₂²) | L = π × (r₁ + r₂) × l</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="fr-r1">{{ L('نصف قطر القاعدة الكبرى (r₁)', 'Bottom radius (r₁)') }}</label>
+                  <input type="number" id="fr-r1" v-model="frR1" placeholder="5" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="fr-error" @keydown.enter.prevent="calc('frustum')" />
+                </div>
+                <div class="input-group">
+                  <label for="fr-r2">{{ L('نصف قطر القاعدة الصغرى (r₂)', 'Top radius (r₂)') }}</label>
+                  <input type="number" id="fr-r2" v-model="frR2" placeholder="2" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="fr-error" @keydown.enter.prevent="calc('frustum')" />
+                </div>
+                <div class="input-group">
+                  <label for="fr-h">{{ L('الارتفاع (h)', 'Height (h)') }}</label>
+                  <input type="number" id="fr-h" v-model="frH" placeholder="4" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="fr-error" @keydown.enter.prevent="calc('frustum')" />
+                </div>
+              </div>
+              <div id="fr-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.frustum }}</div>
+              <button type="button" class="btn-primary" @click="calc('frustum')">{{ L('احسب المخروط الناقص', 'Calculate frustum') }}</button>
+            </div>
+
+            <!-- متوازي السطوح المائل -->
+            <div class="geo-panel" :class="{ active: activeShape === 'obliqueBox' }" id="obliqueBox-panel" role="tabpanel" :aria-label="L('حساب متوازي السطوح المائل', 'Oblique box calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 165 122" width="150" height="111" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('متوازي سطوح مائل مع أبعاده وزاوية ميل حرفه', 'Oblique parallelepiped with its dimensions and edge tilt')">
+                  <polygon points="25,100 100,100 120,88 45,88" fill="none" stroke="#34d399" stroke-width="1.5" opacity="0.5"/>
+                  <polygon points="47,48 122,48 142,36 67,36" fill="none" stroke="#34d399" stroke-width="2" opacity="0.7"/>
+                  <line x1="25" y1="100" x2="47" y2="48" stroke="#34d399" stroke-width="2" opacity="0.7"/>
+                  <line x1="100" y1="100" x2="122" y2="48" stroke="#34d399" stroke-width="2" opacity="0.7"/>
+                  <line x1="120" y1="88" x2="142" y2="36" stroke="#34d399" stroke-width="2" opacity="0.7"/>
+                  <line x1="45" y1="88" x2="67" y2="36" stroke="#34d399" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 3"/>
+                  <line x1="47" y1="48" x2="47" y2="100" stroke="#a78bfa" stroke-width="1.5" opacity="0.6" stroke-dasharray="4 3"/>
+                  <circle cx="47" cy="100" r="2" fill="#a78bfa"/>
+                  <text x="53" y="78" fill="#a78bfa" font-size="9" font-family="Cairo,sans-serif">h</text>
+                  <text x="62" y="113" fill="#34d399" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">a</text>
+                  <text x="112" y="103" fill="#34d399" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">b</text>
+                  <text x="120" y="72" fill="#34d399" font-size="9" font-family="Cairo,sans-serif">c</text>
+                </svg>
+              </div>
+              <div class="formula-bar">V = a × b × h | L = 2b·c + 2a·c·sin θ</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="ob-a">{{ L('الطول (a)', 'Length (a)') }}</label>
+                  <input type="number" id="ob-a" v-model="obA" placeholder="6" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="ob-error" @keydown.enter.prevent="calc('obliqueBox')" />
+                </div>
+                <div class="input-group">
+                  <label for="ob-b">{{ L('العرض (b)', 'Width (b)') }}</label>
+                  <input type="number" id="ob-b" v-model="obB" placeholder="4" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="ob-error" @keydown.enter.prevent="calc('obliqueBox')" />
+                </div>
+                <div class="input-group">
+                  <label for="ob-c">{{ L('الحرف الجانبي (c)', 'Lateral edge (c)') }}</label>
+                  <input type="number" id="ob-c" v-model="obC" placeholder="5" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="ob-error" @keydown.enter.prevent="calc('obliqueBox')" />
+                </div>
+                <div class="input-group">
+                  <label for="ob-t">{{ L('زاوية الميل عن القاعدة (θ°)', 'Tilt from the base (θ°)') }}</label>
+                  <input type="number" id="ob-t" v-model="obT" placeholder="70" min="0" max="90" step="any" inputmode="decimal" autocomplete="off" aria-describedby="ob-error" @keydown.enter.prevent="calc('obliqueBox')" />
+                </div>
+              </div>
+              <div id="ob-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.obliqueBox }}</div>
+              <button type="button" class="btn-primary" @click="calc('obliqueBox')">{{ L('احسب متوازي السطوح المائل', 'Calculate oblique box') }}</button>
             </div>
 
           </div>
