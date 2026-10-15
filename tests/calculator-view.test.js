@@ -186,6 +186,25 @@ describe('CalculatorView — التكامل', () => {
     expect(w.find('.bar-result').text().trim()).toBe('1.4142 ∠ 45°')
   })
 
+  it('مغادرة قسم المركبة تُطفئ وضع القطبية: الأمثلة والتقييم يعودان عاديّين', async () => {
+    // تفعيل وضع القطبية عبر مثال قسم الأعداد المركبة
+    const polar = () => w.find('.ops-list[data-cat="complex"] .ops-item:nth-child(2)')
+    await polar().find('.ops-head').trigger('click')
+    await polar().findAll('.ops-act')[1].trigger('click')
+    expect(w.find('.bar-result').text().trim()).toBe('1.4142 ∠ 45°')
+
+    // مثال قسم الحسابية لا يرث وضع الآلة العام (كان سيعرض 20 ∠ 0°)
+    expect(w.find('.ops-list[data-cat="arith"] .ops-item .ex-res').text().trim()).toBe('20')
+
+    // الانتقال إلى قسم مثلثات يعيد الآلة إلى التقييم العادي
+    const tabs = w.findAll('.ops-tab')
+    await tabs[2].trigger('click')
+    expect(tabs[2].attributes('aria-selected')).toBe('true')
+
+    await input().setValue('sin(30)')
+    expect(w.find('.bar-result').text().trim()).toBe('0.5')
+  })
+
   it('تبويب السجل يعرض آخر ما سُجّل ويميّزه من اللوحات المفتوحة', async () => {
     await input().setValue('12+8')
     await pressEnter()

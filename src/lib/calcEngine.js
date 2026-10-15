@@ -157,9 +157,12 @@ export function evaluate(str, { angle = 'deg', cxMode = 'eval' } = {}) {
   catch (e) { return { error: (e && e.code) || 'syntax' } }
 }
 
-/** نتيجة مثال عملية — للنص المعروض في لوحة العمليات. */
-export function exampleResult(x, m, { angle = 'deg', cxMode = 'eval' } = {}) {
-  const mode = m || cxMode
+/** نتيجة مثال عملية — للنص المعروض في لوحة العمليات.
+ * وضع التنفيذ يأتي من موضع العملية (m) وحده: العمليات بلا وضع خاص تُقيَّم تقييمًا عاديًا
+ * مهما كان وضع الأعداد المركبة المفعّل في الآلة. خيار cxMode لم يعد مُقبَلًا عمدًا حتى
+ * لا ترث أمثلة الحسابية/المثلثات وضع حلّ المعادلة أو القطبية وتعرض شرطة أو زاوية خاطئة. */
+export function exampleResult(x, m, { angle = 'deg' } = {}) {
+  const mode = m || 'eval'
   if (isInequality(x)) {
     const r = solveInequality(x, { angle })
     if (!r.ok) return '—'

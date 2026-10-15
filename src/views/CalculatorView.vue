@@ -45,6 +45,13 @@ const copyLabel = computed(() => (copied.value ? t('calc.copied') : t('calc.copy
 // سياق التقييم الحالي — يُمرَّر إلى محرّك الحساب النقي مع كل إدخال
 const ctx = () => ({ angle: angle.value, cxMode: cxMode.value })
 
+// تغيير قسم العمليات: مغادرة قسم الأعداد المركبة تُطفئ وضع القطبية/الدرجة/الحل
+// حتى لا يسري الوضع العام على تقييمات وأقسام لا علاقة لها به
+function setCat(c) {
+  activeCat.value = c
+  if (c !== 'complex') cxMode.value = 'eval'
+}
+
 function readAngle() {
   try { return localStorage.getItem(LS_ANG) === 'rad' ? 'rad' : 'deg' } catch { return 'deg' }
 }
@@ -240,8 +247,9 @@ function togglePanel(key) {
 }
 const openKeys = computed(() => [...openPanels.value])
 
-// نتيجة مثال العملية كما تُعرض في لوحة العمليات
-const opExample = (x, m) => exampleResult(x, m, ctx())
+// نتيجة مثال العملية كما تُعرض في لوحة العمليات — بزاوية التقييم فقط؛
+// وضع المركبة لا يدخل الأمثلة (يرى exampleResult)
+const opExample = (x, m) => exampleResult(x, m, { angle: angle.value })
 
 // ── السجل ──
 const reversedHistory = computed(() => [...historyList.value].reverse())
@@ -363,7 +371,7 @@ const visibleCats = CATS.filter(c => c !== 'history')
         :open-keys="openKeys"
         :history="reversedHistory"
         :example-result="opExample"
-        @update:activeCat="activeCat = $event"
+        @update:activeCat="setCat"
         @toggle="togglePanel"
         @insert="insertOp"
         @try="tryExample"

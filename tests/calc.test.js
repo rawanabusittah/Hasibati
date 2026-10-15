@@ -204,6 +204,16 @@ describe('calcEngine — نتيجة أمثلة العمليات', () => {
     // نتيجة مثال المتراجحة هي نص حلّها نفسه
     expect(exampleResult('3-2(1-x)≤2')).toBe(evaluate('3-2(1-x)≤2').ineq.solution)
   })
+
+  it('لا ترث الأمثلة وضع الآلة العام: العمليات بلا m تُقيَّم تقييمًا عاديًا', () => {
+    // خيار cxMode المُرسَل هنا متجاهل عمدًا — كان سيُرجع شرطة في وضع solve
+    // وزاوية (20 ∠ 0°) في وضع polar لأمثلة أقسام لا تملك وضعًا خاصًا
+    expect(exampleResult('12+8', undefined, { angle: 'deg', cxMode: 'solve' })).toBe('20')
+    expect(exampleResult('12+8', undefined, { angle: 'deg', cxMode: 'polar' })).toBe('20')
+    expect(exampleResult('3+4i', undefined, { angle: 'deg', cxMode: 'solve' })).toBe('3 + 4i')
+    // أمثلة قسم المركبة نفسها تبقى تتبع موضعها الخاص
+    expect(exampleResult('1+i', 'polar', { angle: 'deg', cxMode: 'solve' })).toContain('∠')
+  })
 })
 
 describe('calcEngine — بناء خطوات الحل', () => {
