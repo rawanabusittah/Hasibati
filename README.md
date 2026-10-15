@@ -8,7 +8,7 @@
 [![Vue 3](https://img.shields.io/badge/Vue-3.x-42b883?logo=vuedotjs&logoColor=white)](https://vuejs.org)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
 [![Vitest](https://img.shields.io/badge/tested%20with-Vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev)
-[![Tests](https://img.shields.io/badge/tests-217%20passing-brightgreen)](#-الاختبارات--tests)
+[![Tests](https://img.shields.io/badge/tests-283%20passing-brightgreen)](#-الاختبارات--tests)
 [![i18n](https://img.shields.io/badge/i18n-AR%20%2F%20EN-blue)](#-الميزات--features)
 [![Supabase](https://img.shields.io/badge/Supabase-optional-3FCF8E?logo=supabase&logoColor=white)](#-supabase-اختياري)
 [![PWA](https://img.shields.io/badge/PWA-installable%20%C2%B7%20offline-5A0FC8?logo=pwa&logoColor=white)](#-pwa-قابل-للتثبيت--offline)
@@ -63,12 +63,18 @@
     </td>
   </tr>
   <tr>
-    <td colspan="2" align="center">
+    <td width="50%" align="center">
       <img src="docs/screenshots/07-geometry.png" alt="حسّاب الأشكال الهندسية" /><br />
       <sub><b>الهندسة</b> — 22 شكلًا (ثنائية وثلاثية الأبعاد) مع شريط قابل للطيّ، والمثلث يُحلّ من أضلاعه ويُصنَّف تلقائيًا (٣-٤-٥ → قائم) + المثلث القائم (فيثاغورس)</sub>
     </td>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/08-auth.png" alt="صفحة الحساب — تسجيل الدخول" /><br />
+      <sub><b>الحسابات</b> — لوحتان منزلقتان للدخول والإنشاء (Supabase اختياري)</sub>
+    </td>
   </tr>
 </table>
+
+> **كل اللقطات أعلاه مُولَّدة آليًا** بأمر واحد (`npm run shots`) عبر Playwright — السكربت يبني النسخة الإنتاجية، يخدمها، ويصوّر الصفحات بلغاتها وثيماتها المحدّدة بلا أي تدخّل يدوي، فتظلّ متطابقة مع الكود.
 
 ---
 
@@ -150,9 +156,10 @@
 │   │   ├── Calc*.vue         # مكوّنات الحاسبة: CalcOpsPanel · CalcKeypad · CalcStepsDialog · CalcCheatSheet
 │   │   └── Geo*.vue          # GeoPanel (لوحة الشكل) + GeoFigure (رسمه التوضيحي)
 │   └── views/                # 8 صفحات (home/calculator/numbers/geometry/contact + auth/services)
-├── tests/                    # اختبارات وحدة + مكوّنات وتكامل (Vitest)
+├── tests/                    # 14 ملفًا: وحدات + خدمات (auth/cloud) + مكوّنات وتكامل
+├── scripts/screenshots.mjs   # توليد لقطات README آليًا (Playwright)
 ├── supabase/                 # schema.sql + SETUP.md لقاعدة البيانات
-├── docs/screenshots/         # لقطات الشاشة
+├── docs/screenshots/         # لقطات الشاشة (مولَّدة بـ npm run shots)
 ├── .github/workflows/        # deploy.yml (نشر Pages) + ci.yml (اختبارات على كل PR)
 └── LICENSE                   # رخصة MIT
 ```
@@ -205,6 +212,7 @@ npm run build      # بناء إنتاجي في dist/
 npm run preview    # معاينة البناء الإنتاجي
 npm test           # تشغيل الاختبارات (Vitest)
 npm run test:watch # الاختبارات في وضع المراقبة
+npm run shots      # توليد لقطات الشاشة في docs/screenshots (يحتاج npx playwright install chromium مرة واحدة)
 ```
 
 > **ملاحظة Windows:** إن حجب PowerShell سكربت `npm`، استخدم `npm.cmd`.
@@ -213,27 +221,30 @@ npm run test:watch # الاختبارات في وضع المراقبة
 
 ## 🧪 الاختبارات · Tests
 
-يفحص المشروع صحّة **محرّك الحساب** و**محوّل الأنظمة** و**الأعداد المركبة** و**المتراجحات** و**خطوات الحل** و**الهندسة** و**محرّك الحاسبة النقي**، ثم يركّب **المكوّنات وصفحتَي الآلة الحاسبة والهندسة** كاملتين (أحداث + حالة + تبديل اللغة) مع **صفحة استعادة كلمة المرور** — بأكثر من **215 اختبارًا**:
+يفحص المشروع صحّة **محرّك الحساب** و**محوّل الأنظمة** و**الأعداد المركبة** و**المتراجحات** و**خطوات الحل** و**الهندسة** و**محرّك الحاسبة النقي**، ثم يركّب **المكوّنات وصفحتَي الآلة الحاسبة والهندسة** كاملتين (أحداث + حالة + تبديل اللغة) مع **صفحتَي المصادقة واستعادة كلمة المرور**، ويغطّي **طبقتَي الخدمة** (المصادقة وقاعدة البيانات) بعميل Supabase وهمي — نجاحاً وفشلاً وترجمة أخطاء وحالة «غير مضبوط» — بأكثر من **280 اختبارًا**:
 
 ```bash
 npm test
 ```
 
 ```
- ✓ tests/baseconv.test.js       (10 tests)
- ✓ tests/ineq.test.js           (11 tests)
- ✓ tests/steps.test.js          (13 tests)
- ✓ tests/complex.test.js        (20 tests)
- ✓ tests/core.test.js           (21 tests)
- ✓ tests/geometry.test.js       (41 tests)
- ✓ tests/calc.test.js           (37 tests)
- ✓ tests/components.test.js     (30 tests)
- ✓ tests/geometry-view.test.js  (13 tests)
+ ✓ tests/baseconv.test.js        (10 tests)
+ ✓ tests/ineq.test.js            (11 tests)
+ ✓ tests/steps.test.js           (13 tests)
+ ✓ tests/complex.test.js         (20 tests)
+ ✓ tests/core.test.js            (21 tests)
+ ✓ tests/geometry.test.js        (41 tests)
+ ✓ tests/calc.test.js            (37 tests)
+ ✓ tests/components.test.js      (30 tests)
+ ✓ tests/geometry-view.test.js   (13 tests)
  ✓ tests/calculator-view.test.js (18 tests)
  ✓ tests/auth-views.test.js      (3 tests)
+ ✓ tests/auth-view.test.js       (17 tests)
+ ✓ tests/services-auth.test.js   (25 tests)
+ ✓ tests/services-cloud.test.js  (24 tests)
 
- Test Files  11 passed (11)
-      Tests  217 passed (217)
+ Test Files  14 passed (14)
+      Tests  283 passed (283)
 ```
 
 ---
@@ -269,7 +280,8 @@ npm test
 - [x] نشر مباشر على GitHub Pages + رابط تجربة في الأعلى.
 - [x] اختبارات الوحدة داخل CI (GitHub Actions).
 - [x] اختبارات المكوّنات والتكامل: تركيب المكوّنات وصفحتَي الحاسبة والهندسة (أحداث + سجلّ محلي + تبديل اللغة) وصفحة استعادة كلمة المرور.
-- [ ] تغطية إضافية: مسارات المصادقة وواجهة الشبكة (Supabase) بلقطات شاشة آلية.
+- [x] تغطية إضافية: مسارات المصادقة وواجهة الشبكة (Supabase) بعميل وهمي + تركيب صفحة الحساب (تحقّق + ترجمة أخطاء + توجيه).
+- [x] لقطات شاشة آلية: `npm run shots` يبني النسخة الإنتاجية ويصوّر الصفحات الثمانية عبر Playwright.
 - [x] PWA يعمل دون اتصال وقابل للتثبيت.
 - [x] مراجعة إتاحة الوصول (a11y) — Lighthouse 100 للمسارات الرئيسية.
 - [x] تقسيم `CalculatorView` و`GeometryView` إلى طبقات: بيانات + منطق نقي قابل للاختبار + مكوّنات عرضية.
