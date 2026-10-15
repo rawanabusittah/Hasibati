@@ -1,27 +1,28 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { MathEngine } from '../lib/core'
-import { solveSteps } from '../lib/steps'
-import { solveInequality, isInequality } from '../lib/ineq'
-import { evaluateComplex, polarOf, solveEquation, fmt as cxFmt, cz, deg360, degSigned } from '../lib/complex'
 import { useI18n } from '../composables/i18n'
 import { saveTool } from '../services/cloud'
 import SavedHistory from '../components/SavedHistory.vue'
 import { CATS, buildOps, buildCatLabels } from '../lib/calcOps'
+import { buildPad } from '../lib/calcPad'
 import { fmt } from '../lib/calcFormat'
+import { fmt as cxFmt } from '../lib/complex'
+import { evaluate, exampleResult, buildSteps, errText, ineqSolutionText, cxResultText } from '../lib/calcEngine'
 import CalcKeypad from '../components/CalcKeypad.vue'
 import CalcOpsPanel from '../components/CalcOpsPanel.vue'
 import CalcStepsDialog from '../components/CalcStepsDialog.vue'
+import CalcCheatSheet from '../components/CalcCheatSheet.vue'
 
 const { L, t } = useI18n()
-const ME = MathEngine
 
 const LS_HIST = 'hp_calc_history'
 const LS_ANG = 'hp_angle'
+const MAXLEN = 200
 
 // تُبنى عبر computed حتى تتحدّث التسميات والوصف فورًا عند تبديل اللغة
 const OPS = computed(() => buildOps(L))
 const CAT_LABELS = computed(() => buildCatLabels(L))
+const pad = computed(() => buildPad(L))
 
 // ── الحالة ──
 const expr = ref('')
@@ -30,6 +31,7 @@ const result = ref('0')
 const resultError = ref(false)
 const ok = ref(false)
 const last = ref('')
+const copied = ref(false)
 const angle = ref(readAngle())
 const activeCat = ref('arith')
 const openPanels = ref(new Set())
@@ -38,6 +40,10 @@ const cxMode = ref('eval')
 
 const historyList = ref(getHistory())
 const modeLabel = computed(() => (angle.value === 'deg' ? 'DEG' : 'RAD'))
+const copyLabel = computed(() => (copied.value ? t('calc.copied') : t('calc.copy')))
+
+// سياق التقييم الحالي — يُمرَّر إلى محرّك الحساب النقي مع كل إدخال
+const ctx = () => ({ angle: angle.value, cxMode: cxMode.value })
 
 function readAngle() {
   try { return localStorage.getItem(LS_ANG) === 'rad' ? 'rad' : 'deg' } catch { return 'deg' }
@@ -49,124 +55,39 @@ function setHistory(arr) {
   try { localStorage.setItem(LS_HIST, JSON.stringify(arr.slice(0, 50))) } catch { /* تجاهل */ }
 }
 
-const errKey = (code) => 'calc.err.' + (code === 'div0' ? 'div0' : code === 'domain' ? 'domain' : 'syntax')
-
-// نص خطأ مترجَم — يدعم أخطاء المتراجحات والأعداد المركبة أيضاً
-// تعبير مركب: وحدة تخيلية ظاهرة (i غير متبوعة بحرف) أو جذر عدد سالب (sqrt(-ا) / √-)
-const isComplexExpr = (s) => /(?:i(?!\w)|(?:sqrt|√)\s*\(?\s*-)/i.test(s)
-const looksLikeEquation = (s) => /[xX=^]/.test(s)
-const d2 = (v) => String(Math.round(v * 100) / 100)
-const shortNum = (v) => {
-  if (!Number.isFinite(v)) return String(v)
-  return String(Math.round(v * 10000) / 10000)
-}
-
-function errText(code) {
-  switch (code) {
-    case 'div0': return t('calc.err.div0')
-    case 'domain': return t('calc.err.domain')
-    case 'multi': return cxMode.value === 'solve' ? t('calc.cx.multi') : t('calc.ineq.multi')
-    case 'nonlin': return t('calc.ineq.nonlin')
-    case 'deg': return t('calc.cx.deg')
-    case 'mode': return t('calc.stats.nomode')
-    default: return t('calc.err.syntax')
+function preview() {
+  const src = expr.value.trim()
+  if (!src) {
+    result.value = '0'
+    resultError.value = false
+    ok.value = false
+    last.value = ''
+    return
+  }
+  const r = evaluate(src, ctx())
+  if (r.error) {
+    result.value = errText(r.error, t, cxMode.value)
+    resultError.value = true
+    ok.value = false
+    last.value = ''
+  } else if (r.ineq) {
+    result.value = ineqSolutionText(r.ineq, t)
+    resultError.value = false
+    last.value = result.value
+    ok.value = true
+  } else if (r.cx) {
+    showComplexResult(r.cx)
+    resultError.value = false
+    ok.value = true
+  } else {
+    result.value = fmt(r.value)
+    resultError.value = false
+    last.value = fmt(r.value)
+    ok.value = true
   }
 }
 
-// ── إحصاءات وصفية ──
-const STATS_FNS = new Set(['avg', 'med', 'mode', 'std', 'sstd', 'var', 'svar', 'q1', 'q3', 'iqr', 'mhinge', 'midrange', 'range', 'max', 'min', 'gmean', 'hmean'])
-function medOfL(a) {
-  const m = a.length >> 1
-  return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2
-}
-function statMeasures(list) {
-  const s = list.slice().sort((x, y) => x - y)
-  const n = s.length
-  const sum = s.reduce((x, v) => x + v, 0)
-  const mean = sum / n
-  const m = n >> 1
-  const q1 = medOfL(s.slice(0, n % 2 ? m + 1 : m))
-  const q3 = medOfL(s.slice(m))
-  const vs = s.reduce((t, v) => t + (v - mean) * (v - mean), 0)
-  const div = (sample) => (sample ? vs / (n - 1) : vs / n)
-  const cnt = new Map()
-  for (const v of s) cnt.set(v, (cnt.get(v) || 0) + 1)
-  let best = 0
-  for (const c of cnt.values()) best = Math.max(best, c)
-  const modes = best > 1 ? [...cnt].filter(([k, c]) => c === best).map(([k]) => k) : []
-  const mn = s[0], mx = s[n - 1]
-  const allPos = s.every(v => v > 0)
-  return {
-    n, sum, mean, median: medOfL(s), q1, q3, iqr: q3 - q1,
-    stdev: Math.sqrt(div(false)),
-    sstd: n > 1 ? Math.sqrt(div(true)) : null,
-    varPop: div(false),
-    varSam: n > 1 ? div(true) : null,
-    range: mx - mn, midrange: (mn + mx) / 2, midhinge: (q1 + q3) / 2,
-    min: mn, max: mx, modes,
-    gmean: allPos ? Math.pow(s.reduce((a, b) => a * b, 1), 1 / n) : null,
-    hmean: allPos ? n / s.reduce((a, b) => a + 1 / b, 0) : null
-  }
-}
-
-
-function ineqSolutionText(r) {
-  if (r.special === 'all') return t('calc.ineq.all')
-  if (r.special === 'none') return t('calc.ineq.none')
-  return r.solution
-}
-
-function evaluate(str) {
-  if (isInequality(str)) {
-    const r = solveInequality(str, { angle: angle.value })
-    return r.ok ? { ineq: r } : { error: r.error }
-  }
-  // الأعداد المركبة: وضع قطبية/درجة، أو تعبير يظهر فيه الحرف i كوحدة تخيلية
-  if (cxMode.value === 'polar' || cxMode.value === 'degree' || isComplexExpr(str)) {
-    let m = cxMode.value
-    if (m === 'solve' && isComplexExpr(str) && !looksLikeEquation(str)) m = 'eval'
-    const r = cxEvaluate(str, m)
-    if (r.ok) return { cx: r.data }
-    if (m !== 'eval' && !isComplexExpr(str)) {
-      try { return { value: ME.evaluate(str, { angle: angle.value, vars: { x: 0 } }) } }
-      catch (e2) { /* نتجاهل ونعرض الخطأ المركب */ }
-    }
-    return { error: r.error }
-  }
-  // وضع الحل: معادلة واضحة (تتضمن x أو ^ أو =)
-  if (cxMode.value === 'solve' && looksLikeEquation(str)) {
-    const r = solveEquation(str)
-    return r.ok
-      ? { cx: { mode: 'solve', degree: r.degree, special: r.special || null, roots: r.roots || [] } }
-      : { error: r.error }
-  }
-  try { return { value: ME.evaluate(str, { angle: angle.value, vars: { x: 0 } }) } }
-  catch (e) { return { error: (e && e.code) || 'syntax' } }
-}
-
-// تقييم تعبير مركب أو حل معادلة حسب الوضع — يعيد { ok, data } أو { ok:false, error }
-function cxEvaluate(src, mode) {
-  if (mode === 'solve') {
-    const r = solveEquation(src)
-    return r.ok
-      ? { ok: true, data: { mode: 'solve', degree: r.degree, special: r.special || null, roots: r.roots || [] } }
-      : { ok: false, error: r.error }
-  }
-  try {
-    const z = evaluateComplex(src)
-    return { ok: true, data: { mode, z, p: polarOf(z) } }
-  } catch (e) {
-    return { ok: false, error: e && e.code ? e.code : 'syntax' }
-  }
-}
-
-function cxResultText(data) {
-  if (data.mode === 'eval') return cxFmt(data.z)
-  if (data.mode === 'polar') return shortNum(data.p.r) + ' ∠ ' + d2(degSigned(data.p.deg)) + '°'
-  if (data.mode === 'degree') return d2(degSigned(data.p.deg)) + '°'
-  return data.special === 'all' ? t('calc.ineq.all') : data.special === 'none' ? t('calc.ineq.none') : data.roots.map(cxFmt).join(' ، ')
-}
-
+// العرض المختصر لحلٍّ مركب: تظهر الجذور كاملة إن كانت قصيرة، وإلا يُذكر عددها
 function showComplexResult(data) {
   if (data.mode === 'solve') {
     if (data.special === 'all') {
@@ -184,40 +105,8 @@ function showComplexResult(data) {
     }
     return
   }
-  result.value = cxResultText(data)
+  result.value = cxResultText(data, t)
   last.value = result.value
-}
-
-function preview() {
-  const src = expr.value.trim()
-  if (!src) {
-    result.value = '0'
-    resultError.value = false
-    ok.value = false
-    last.value = ''
-    return
-  }
-  const r = evaluate(src)
-  if (r.error) {
-    result.value = errText(r.error)
-    resultError.value = true
-    ok.value = false
-    last.value = ''
-  } else if (r.ineq) {
-    result.value = ineqSolutionText(r.ineq)
-    resultError.value = false
-    last.value = result.value
-    ok.value = true
-  } else if (r.cx) {
-    showComplexResult(r.cx)
-    resultError.value = false
-    ok.value = true
-  } else {
-    result.value = fmt(r.value)
-    resultError.value = false
-    last.value = fmt(r.value)
-    ok.value = true
-  }
 }
 
 function record() {
@@ -325,60 +214,15 @@ function copyText(text) {
   else legacy()
 }
 
-const copied = ref(false)
-const copyLabel = computed(() => (copied.value ? t('calc.copied') : t('calc.copy')))
-
 // ── خطوات الحل بالترتيب ──
 const showSteps = ref(false)
 const stepsData = ref(null)
 const stepsError = ref('') // '' | 'empty' | مفتاح خطأ
 
-
 function openSteps() {
-  const src = expr.value.trim()
-  if (!src) {
-    stepsData.value = null
-    stepsError.value = 'empty'
-    showSteps.value = true
-    return
-  }
-  if (isInequality(src)) {
-    const r = solveInequality(src, { angle: angle.value })
-    if (r.ok) {
-      stepsData.value = {
-        original: src,
-        type: 'ineq',
-        steps: r.steps,
-        special: r.special,
-        solution: r.solution
-      }
-      stepsError.value = ''
-    } else {
-      stepsData.value = null
-      stepsError.value = r.error === 'multi' ? 'calc.ineq.multi' : r.error === 'nonlin' ? 'calc.ineq.nonlin' : 'calc.err.syntax'
-    }
-    showSteps.value = true
-    return
-  }
-  // استدعاء إحصائي صريح مثل med(4,8,6) أو std(2,4,6) → تقرير كامل بالمقاييس
-  const statsCall = src.match(/^([A-Za-z][A-Za-z0-9]*)\(([^()]*)\)$/)
-  if (statsCall && STATS_FNS.has(statsCall[1])) {
-    try {
-      const nums = statsCall[2].split(',').map(ns => ME.evaluate(ns.trim() || '0', { angle: angle.value, vars: { x: 0 } }))
-      if (nums.length && nums.every(Number.isFinite)) {
-        openStatsSteps(statsCall[1], src, nums)
-        return
-      }
-    } catch (e) { /* نكمل للمسار العادي */ }
-  }
-  const complexLike = isComplexExpr(src)
-  if (cxMode.value === 'polar' || cxMode.value === 'degree' || complexLike || (cxMode.value === 'solve' && looksLikeEquation(src))) {
-    openComplexSteps(src)
-    return
-  }
-  const r = solveSteps(src, { angle: angle.value })
-  stepsData.value = r.ok ? r : null
-  stepsError.value = r.ok ? '' : (r.error === 'div0' ? 'calc.err.div0' : r.error === 'domain' ? 'calc.err.domain' : r.error === 'mode' ? 'calc.stats.nomode' : 'calc.err.syntax')
+  const r = buildSteps(expr.value, ctx())
+  stepsData.value = r.data
+  stepsError.value = r.error
   showSteps.value = true
 }
 
@@ -387,64 +231,6 @@ function closeSteps() {
   inputEl.value?.focus()
 }
 
-// ── تقرير إحصائي كامل داخل نافذة الخطوات ──
-function openStatsSteps(fn, original, list) {
-  let final = null
-  try { final = ME.evaluate(original, { angle: angle.value, vars: { x: 0 } }) } catch { /* يبقى null */ }
-  stepsData.value = { type: 'stats', original, fn, final, m: statMeasures(list) }
-  stepsError.value = ''
-  showSteps.value = true
-}
-
-// ── خطوات/تفاصيل الأعداد المركبة ──
-function openComplexSteps(src) {
-  let m = cxMode.value
-  if (m === 'solve' && isComplexExpr(src) && !looksLikeEquation(src)) m = 'eval'
-  const r = cxEvaluate(src, m)
-  if (!r.ok) {
-    if ((m === 'polar' || m === 'degree') && !isComplexExpr(src)) {
-      const nr = solveSteps(src, { angle: angle.value })
-      stepsData.value = nr.ok ? nr : null
-      stepsError.value = nr.ok ? '' : (nr.error === 'div0' ? 'calc.err.div0' : nr.error === 'domain' ? 'calc.err.domain' : nr.error === 'mode' ? 'calc.stats.nomode' : 'calc.err.syntax')
-      showSteps.value = true
-      return
-    }
-    stepsData.value = null
-    stepsError.value = r.error === 'multi' ? 'calc.cx.multi' : r.error === 'deg' ? 'calc.cx.deg' : r.error === 'domain' ? 'calc.err.domain' : 'calc.err.syntax'
-    showSteps.value = true
-    return
-  }
-  const data = r.data
-  let p = null
-  if (data.mode !== 'solve') {
-    p = {
-      re: shortNum(data.z.re),
-      im: shortNum(data.z.im),
-      r: shortNum(data.p.r),
-      abs: shortNum(data.p.r),
-      deg360: d2(deg360(data.p.deg)),
-      degP: d2(degSigned(data.p.deg)),
-      rad: d2(data.p.rad),
-      conj: cxFmt(cz.conj(data.z))
-    }
-  }
-  stepsData.value = {
-    type: 'complex',
-    original: src,
-    cx: {
-      mode: data.mode,
-      special: data.special || null,
-      degree: data.degree,
-      roots: data.roots || [],
-      zStr: data.z ? cxFmt(data.z) : null,
-      p
-    }
-  }
-  stepsError.value = ''
-  showSteps.value = true
-}
-
-
 // ── العمليات القابلة للطي ──
 function togglePanel(key) {
   const s = new Set(openPanels.value)
@@ -452,36 +238,10 @@ function togglePanel(key) {
   else s.add(key)
   openPanels.value = s
 }
-function isOpen(key) { return openPanels.value.has(key) }
 const openKeys = computed(() => [...openPanels.value])
 
-function exampleResult(x, m) {
-  const mode = m || cxMode.value
-  if (isInequality(x)) {
-    const r = solveInequality(x, { angle: angle.value })
-    if (!r.ok) return '—'
-    return r.special === 'all' ? 'ℝ' : r.special === 'none' ? '—' : r.solution
-  }
-  if (mode === 'solve') {
-    const r = solveEquation(x)
-    if (!r.ok) return '—'
-    if (r.special === 'all') return 'ℝ'
-    if (r.special === 'none') return '—'
-    return r.roots.map(cxFmt).join('،')
-  }
-  if (mode === 'polar' || mode === 'degree') {
-    try {
-      const z = evaluateComplex(x)
-      const p = polarOf(z)
-      return mode === 'polar' ? shortNum(p.r) + ' ∠ ' + d2(degSigned(p.deg)) + '°' : d2(degSigned(p.deg)) + '°'
-    } catch { return '—' }
-  }
-  if (isComplexExpr(x)) {
-    try { return cxFmt(evaluateComplex(x)) } catch { return '—' }
-  }
-  try { return fmt(ME.evaluate(x, { angle: angle.value, vars: { x: 0 } })) }
-  catch { return '—' }
-}
+// نتيجة مثال العملية كما تُعرض في لوحة العمليات
+const opExample = (x, m) => exampleResult(x, m, ctx())
 
 // ── السجل ──
 const reversedHistory = computed(() => [...historyList.value].reverse())
@@ -511,43 +271,7 @@ function insertOp(op) {
   inputEl.value?.focus()
 }
 
-// ── لوحة الأرقام ──
-const pad = computed(() => [
-  { act: 'clear', label: 'AC', cls: 'clear', aria: [L('مسح الكل (AC)', 'Clear all (AC)')] },
-  { act: 'back', label: '⌫', cls: 'fn', aria: [L('مسح آخر حرف', 'Backspace')] },
-  { act: 'append', val: '(', label: '(', cls: 'fn', aria: [L('قوس فتح', 'Open parenthesis')] },
-  { act: 'append', val: ')', label: ')', cls: 'fn', aria: [L('قوس إغلاق', 'Close parenthesis')] },
-  { act: 'append', val: '7', label: '7', cls: '' },
-  { act: 'append', val: '8', label: '8', cls: '' },
-  { act: 'append', val: '9', label: '9', cls: '' },
-  { act: 'append', val: '÷', label: '÷', cls: 'op', aria: [L('قسمة', 'Divide')] },
-  { act: 'append', val: '4', label: '4', cls: '' },
-  { act: 'append', val: '5', label: '5', cls: '' },
-  { act: 'append', val: '6', label: '6', cls: '' },
-  { act: 'append', val: '×', label: '×', cls: 'op', aria: [L('ضرب', 'Multiply')] },
-  { act: 'append', val: '1', label: '1', cls: '' },
-  { act: 'append', val: '2', label: '2', cls: '' },
-  { act: 'append', val: '3', label: '3', cls: '' },
-  { act: 'append', val: '-', label: '−', cls: 'op', aria: [L('طرح', 'Subtract')] },
-  { act: 'append', val: '0', label: '0', cls: '' },
-  { act: 'append', val: '.', label: '.', cls: '', aria: [L('فاصلة عشرية', 'Decimal point')] },
-  { act: 'fn', val: 'neg', label: '±', cls: 'fn', aria: [L('تغيير الإشارة', 'Toggle sign')] },
-  { act: 'append', val: '+', label: '+', cls: 'op', aria: [L('جمع', 'Add')] },
-  { act: 'append', val: 'x', label: 'x', cls: 'fn', aria: [L('المتغير x للدوال', 'The variable x for functions')] },
-  { act: 'fn', val: 'pi', label: 'π', cls: 'fn', aria: [L('باي', 'Pi')] },
-  { act: 'fn', val: 'e', label: 'e', cls: 'fn', aria: [L('العدد النيبيري', "Euler's number")] },
-  { act: 'append', val: ',', label: ',', cls: 'fn', aria: [L('فاصلة بين الوسائط', 'Argument separator')] },
-  { act: 'append', val: '≤', label: '≤', cls: 'op', aria: [L('أصغر من أو يساوي', 'Less than or equal to')] },
-  { act: 'append', val: '≥', label: '≥', cls: 'op', aria: [L('أكبر من أو يساوي', 'Greater than or equal to')] },
-  { act: 'append', val: '<', label: '<', cls: 'op', aria: [L('أصغر من', 'Less than')] },
-  { act: 'append', val: '>', label: '>', cls: 'op', aria: [L('أكبر من', 'Greater than')] },
-  { act: 'append', val: 'i', label: 'i', cls: 'op', aria: [L('الوحدة التخيلية', 'Imaginary unit i')] },
-  { act: 'equals', label: '=', cls: 'eq', aria: [L('احسب النتيجة', 'Calculate')] }
-])
-
 // ── اختصار لوحة المفاتيح ──
-const MAXLEN = 200
-
 function onKey(e) {
   if (showSteps.value) {
     if (e.key === 'Escape' || e.key === 'Enter' || e.key === '=') {
@@ -638,7 +362,7 @@ const visibleCats = CATS.filter(c => c !== 'history')
         :active-cat="activeCat"
         :open-keys="openKeys"
         :history="reversedHistory"
-        :example-result="exampleResult"
+        :example-result="opExample"
         @update:activeCat="activeCat = $event"
         @toggle="togglePanel"
         @insert="insertOp"
@@ -653,34 +377,7 @@ const visibleCats = CATS.filter(c => c !== 'history')
       </div>
     </div>
 
-    <section class="cheat-sec" aria-labelledby="cheat-head">
-      <header class="cheat-sec-head">
-        <h2 id="cheat-head">{{ L('نصائح سريعة', 'Quick tips') }}</h2>
-        <p>{{ L('اختصارات وقواعد توفّر عليك الوقت.', 'Shortcuts and rules that save you time.') }}</p>
-      </header>
-      <div class="cheat-grid">
-        <div class="cheat">
-          <div class="cheat-icon blue" aria-hidden="true">%</div>
-          <h3>{{ L('النسبة المئوية الذكية', 'Smart percent') }}</h3>
-          <p><code>200+10%</code> {{ L('تضيف 10% من 200 فتصبح 220. وحدها،', 'adds 10% of 200 → 220. On its own,') }} <code>50%</code> {{ L('تساوي 0.5.', 'is 0.5.') }}</p>
-        </div>
-        <div class="cheat">
-          <div class="cheat-icon purple" aria-hidden="true">πx</div>
-          <h3>{{ L('الضرب الضمني', 'Implicit multiplication') }}</h3>
-          <p>{{ L('اكتب', 'Write') }} <code>2π</code> {{ L('أو', 'or') }} <code>3(4+1)</code> {{ L('أو', 'or') }} <code>2sin(30)</code> {{ L('دون الحاجة إلى ×.', 'without typing ×.') }}</p>
-        </div>
-        <div class="cheat">
-          <div class="cheat-icon green" aria-hidden="true">∫</div>
-          <h3>{{ L('التفاضل والتكامل', 'Calculus') }}</h3>
-          <p>{{ L('استخدم', 'Use') }} <b>x</b> {{ L('كمتغير:', 'as the variable:') }} <code>diff(x^2,3)</code> = 6 {{ L('و', 'and') }} <code>int(x^2,0,3)</code> = 9. {{ L('النتائج عددية.', 'Results are numeric.') }}</p>
-        </div>
-        <div class="cheat">
-          <div class="cheat-icon red" aria-hidden="true">⚠</div>
-          <h3>{{ L('أخطاء واضحة', 'Clear errors') }}</h3>
-          <p>{{ L('القسمة على صفر أو', 'Dividing by zero,') }} <code>tan(90)</code> {{ L('أو', 'or') }} <code>log(0)</code> {{ L('تُظهر رسالة واضحة بدل رقم خاطئ.', 'show a clear message instead of a wrong number.') }}</p>
-        </div>
-      </div>
-    </section>
+    <CalcCheatSheet />
   </div>
 
   <CalcStepsDialog :show="showSteps" :payload="stepsData" :error="stepsError" @close="closeSteps" />
