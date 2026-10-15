@@ -125,14 +125,14 @@
 ├── index.html                # نقطة الدخول (Vite)
 ├── vite.config.js            # إعداد Vite + PWA (manifest + workbox)
 ├── public/
-│   ├── css/                  # نظام التصميم (style, theme, calc-ops, components, design)
 │   ├── icons/                # أيقونات PWA (192 / 512 / maskable-512)
 │   ├── apple-touch-icon.png  # أيقونة iOS
 │   └── robots.txt            # توجيهات الزحف
 ├── src/
-│   ├── main.js               # إقلاع التطبيق
+│   ├── main.js               # إقلاع التطبيق + استيراد طبقات الأنماط
 │   ├── App.vue               # الشريط العلوي + الفوتر + <router-view>
 │   ├── router/index.js       # المسارات (hash history)
+│   ├── assets/css/           # نظام التصميم في 5 طبقات (اقرأ README.md هناك)
 │   ├── composables/          # i18n (عربي/إنجليزي) + theme (ليلي/نهاري)
 │   ├── services/             # auth + cloud + إعدادات الموقع (Supabase)
 │   ├── lib/
@@ -141,9 +141,12 @@
 │   │   ├── ineq.js           # حلّ المتراجحات
 │   │   ├── complex.js        # محرّك الأعداد المركبة
 │   │   ├── calcOps.js        # فئات عمليات الآلة الحاسبة (بيانات ثنائية اللغة)
-│   │   └── calcFormat.js     # تنسيق موحّد للأرقام
+│   │   ├── calcFormat.js     # تنسيق موحّد للأرقام
+│   │   ├── geoFormulas.js    # معادلات الأشكال الهندسية (دوال نقيّة قابلة للاختبار)
+│   │   └── geoShapes.js      # بيانات الأشكال: الحقول والمعادلات المعروضة
 │   ├── components/           # AppNav, AppFooter, SavedHistory, SheetSolver
-│   │   └── Calc*.vue         # مكوّنات الحاسبة: CalcOpsPanel · CalcKeypad · CalcStepsDialog
+│   │   ├── Calc*.vue         # مكوّنات الحاسبة: CalcOpsPanel · CalcKeypad · CalcStepsDialog
+│   │   └── Geo*.vue          # GeoPanel (لوحة الشكل) + GeoFigure (رسمه التوضيحي)
 │   └── views/                # 8 صفحات (home/calculator/numbers/geometry/contact + auth/services)
 ├── tests/                    # اختبارات الوحدة (Vitest)
 ├── supabase/                 # schema.sql + SETUP.md لقاعدة البيانات
