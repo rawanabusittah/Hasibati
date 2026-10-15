@@ -141,11 +141,13 @@
 │   │   ├── ineq.js           # حلّ المتراجحات
 │   │   ├── complex.js        # محرّك الأعداد المركبة
 │   │   ├── calcOps.js        # فئات عمليات الآلة الحاسبة (بيانات ثنائية اللغة)
+│   │   ├── calcPad.js        # أزرار لوحة الأرقام (بيانات ثنائية اللغة)
+│   │   ├── calcEngine.js     # منطق الحاسبة النقي: تقييم + مركبة + خطوات + إحصاء
 │   │   ├── calcFormat.js     # تنسيق موحّد للأرقام
 │   │   ├── geoFormulas.js    # معادلات الأشكال الهندسية (دوال نقيّة قابلة للاختبار)
 │   │   └── geoShapes.js      # بيانات الأشكال: الحقول والمعادلات المعروضة
 │   ├── components/           # AppNav, AppFooter, SavedHistory, SheetSolver
-│   │   ├── Calc*.vue         # مكوّنات الحاسبة: CalcOpsPanel · CalcKeypad · CalcStepsDialog
+│   │   ├── Calc*.vue         # مكوّنات الحاسبة: CalcOpsPanel · CalcKeypad · CalcStepsDialog · CalcCheatSheet
 │   │   └── Geo*.vue          # GeoPanel (لوحة الشكل) + GeoFigure (رسمه التوضيحي)
 │   └── views/                # 8 صفحات (home/calculator/numbers/geometry/contact + auth/services)
 ├── tests/                    # اختبارات الوحدة (Vitest)
@@ -211,7 +213,7 @@ npm run test:watch # الاختبارات في وضع المراقبة
 
 ## 🧪 الاختبارات · Tests
 
-يفحص المشروع صحّة **محرّك الحساب** و**محوّل الأنظمة** و**الأعداد المركبة** و**المتراجحات** و**خطوات الحل** — بأكثر من **75 اختبارًا**:
+يفحص المشروع صحّة **محرّك الحساب** و**محوّل الأنظمة** و**الأعداد المركبة** و**المتراجحات** و**خطوات الحل** و**الهندسة** و**محرّك الحاسبة النقي** — بأكثر من **150 اختبارًا**:
 
 ```bash
 npm test
@@ -223,9 +225,11 @@ npm test
  ✓ tests/steps.test.js     (13 tests)
  ✓ tests/complex.test.js   (20 tests)
  ✓ tests/core.test.js      (21 tests)
+ ✓ tests/geometry.test.js  (41 tests)
+ ✓ tests/calc.test.js      (36 tests)
 
- Test Files  5 passed (5)
-      Tests  75 passed (75)
+ Test Files  7 passed (7)
+      Tests  152 passed (152)
 ```
 
 ---
@@ -263,7 +267,7 @@ npm test
 - [ ] توسيع الاختبارات (تغطية إضافية + اختبارات مكوّنات).
 - [x] PWA يعمل دون اتصال وقابل للتثبيت.
 - [x] مراجعة إتاحة الوصول (a11y) — Lighthouse 100 للمسارات الرئيسية.
-- [x] تقسيم `CalculatorView` إلى فئات عمليات مستقلة (بيانات + مكوّنات قابلة لإعادة الاستخدام).
+- [x] تقسيم `CalculatorView` و`GeometryView` إلى طبقات: بيانات + منطق نقي قابل للاختبار + مكوّنات عرضية.
 - [ ] مشاركة التعبير عبر الرابط + روابط عميقة للحسابات.
 
 ## 📄 الرخصة · License
