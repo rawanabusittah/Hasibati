@@ -13,6 +13,11 @@
 [![Supabase](https://img.shields.io/badge/Supabase-optional-3FCF8E?logo=supabase&logoColor=white)](#-supabase-اختياري)
 [![PWA](https://img.shields.io/badge/PWA-installable%20%C2%B7%20offline-5A0FC8?logo=pwa&logoColor=white)](#-pwa-قابل-للتثبيت--offline)
 [![Lighthouse](https://img.shields.io/badge/Lighthouse-100%20a11y%20%C2%B7%20100%20SEO-brightgreen)](#-الجودة--quality)
+[![Deploy](https://github.com/rawanabusittah/Hasibati/actions/workflows/deploy.yml/badge.svg)](https://github.com/rawanabusittah/Hasibati/actions/workflows/deploy.yml)
+[![CI](https://github.com/rawanabusittah/Hasibati/actions/workflows/ci.yml/badge.svg)](https://github.com/rawanabusittah/Hasibati/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+🔗 **[تجربة مباشرة · Live demo](https://rawanabusittah.github.io/Hasibati/)**
 
 </div>
 
@@ -143,9 +148,8 @@
 ├── tests/                    # اختبارات الوحدة (Vitest)
 ├── supabase/                 # schema.sql + SETUP.md لقاعدة البيانات
 ├── docs/screenshots/         # لقطات الشاشة
-├── netlify.toml              # إعداد نشر Netlify
-├── .github/workflows/deploy.yml  # نشر تلقائي على GitHub Pages
-└── legacy/                   # النسخة القديمة (HTML كلاسيكي) للرجوع إليها
+├── .github/workflows/        # deploy.yml (نشر Pages) + ci.yml (اختبارات على كل PR)
+└── LICENSE                   # رخصة MIT
 ```
 
 ### 🗺️ المسارات
@@ -227,8 +231,6 @@ npm test
 
 التطبيق موقع ثابت بالكامل (SPA بـ hash history) — يعمل على أي استضافة ثابتة **دون أي إعداد إضافي**.
 
-**Netlify (الأسرع):** اربط مستودع GitHub على Netlify؛ سيتعرّف تلقائيًا على `netlify.toml` (أمر البناء `npm run build`، مجلد النشر `dist`).
-
 **GitHub Pages:** فعّل `Settings → Pages → Source: GitHub Actions`؛ سيتكفّل `‎.github/workflows/deploy.yml` بالبناء والنشر عند كل دفعة إلى `main`.
 
 **محليًا:** افتح `dist/index.html` مباشرةً بعد البناء (المسارات نسبية).
@@ -253,7 +255,8 @@ npm test
 
 ## 🗺️ خارطة الطريق · Roadmap
 
-- [ ] نشر مباشر (Netlify / GitHub Pages) + رابط تجربة في الأعلى.
+- [x] نشر مباشر على GitHub Pages + رابط تجربة في الأعلى.
+- [x] اختبارات الوحدة داخل CI (GitHub Actions).
 - [ ] توسيع الاختبارات (تغطية إضافية + اختبارات مكوّنات).
 - [x] PWA يعمل دون اتصال وقابل للتثبيت.
 - [x] مراجعة إتاحة الوصول (a11y) — Lighthouse 100 للمسارات الرئيسية.
@@ -262,7 +265,7 @@ npm test
 
 ## 📄 الرخصة · License
 
-هذا مشروع شخصي/تعليمي. أضف ملف `LICENSE` (مقترح: MIT) إن رغبت بمشاركته كمصدر مفتوح.
+موزَّع تحت رخصة **MIT** — راجع ملف [`LICENSE`](LICENSE). يمكنك استخدامه وتعديله ومشاركته مع الإشارة إلى المصدر.
 
 ---
 
