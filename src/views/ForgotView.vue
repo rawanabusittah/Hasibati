@@ -114,8 +114,8 @@ function goBack() { step.value = 1; statusKind.value = ''; statusText.value = ''
             <input :type="showPw ? 'text' : 'password'" id="forgot-newpass" v-model="newPass" placeholder="••••••••" autocomplete="new-password" required />
             <button type="button" class="pw-toggle" :aria-label="L('إظهار كلمة المرور', 'Show password')" @click="showPw = !showPw">👁️</button>
           </div>
-          <div class="pw-strength" aria-hidden="true">
-            <span v-for="i in 4" :key="i" :class="{ on: i <= strength }"></span>
+          <div class="pw-strength" :class="'s' + strength" aria-hidden="true">
+            <span v-for="i in 4" :key="i"></span>
           </div>
           <div class="pw-hint" :class="hintKind">{{ pwHint }}</div>
         </div>
