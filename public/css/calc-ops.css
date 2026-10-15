@@ -202,14 +202,14 @@
 .shape-bar .geo-tab { display: inline-flex; align-items: center; gap: .35rem; white-space: nowrap; }
 
 /* ── شريط الأشكال المطويّ: سطر واحد + زر «المزيد» ── */
-.shape-zone { margin-bottom: 1.4rem; text-align: center; }
-.shape-zone .shape-bar { position: relative; margin-bottom: .7rem; }
+.shape-zone { display: flex; align-items: flex-start; gap: .5rem; margin-bottom: 1.4rem; }
+.shape-zone .shape-bar { position: relative; flex: 1 1 auto; min-width: 0; }
 .shape-bar.is-collapsed {
   flex-wrap: nowrap; overflow: hidden; justify-content: flex-start;
   padding: 2px 0 6px;
 }
 .shape-bar.is-collapsed::after {
-  content: ''; position: absolute; inset-block: 0; inset-inline-end: 0; width: 68px;
+  content: ''; position: absolute; inset-block: 2px 8px; inset-inline-end: 0; width: 68px;
   pointer-events: none;
   background: linear-gradient(to right, transparent, var(--bg-primary));
 }
@@ -217,6 +217,7 @@ html[dir="rtl"] .shape-bar.is-collapsed::after {
   background: linear-gradient(to left, transparent, var(--bg-primary));
 }
 .geo-more {
+  flex: 0 0 auto; margin-top: 2px;
   display: inline-flex; align-items: center; gap: .3rem; cursor: pointer;
   padding: .35rem .95rem; font: 800 .8rem var(--font-main);
   color: var(--text-secondary); background: var(--bg-card);
