@@ -45,9 +45,18 @@ const cylR = ref('')
 const cylH = ref('')
 const coneR = ref('')
 const coneH = ref('')
+const pyrA = ref('')
+const pyrH = ref('')
+const prmN = ref('')
+const prmS = ref('')
+const prmH = ref('')
+const hemiR = ref('')
 
-const errors = reactive({ circle: '', square: '', rect: '', triangle: '', right: '', sphere: '', rhombus: '', parallelogram: '', trapezoid: '', polygon: '', ellipse: '', sector: '', cube: '', cuboid: '', cylinder: '', cone: '' })
-const results = reactive({ circle: [], square: [], rect: [], triangle: [], right: [], sphere: [], rhombus: [], parallelogram: [], trapezoid: [], polygon: [], ellipse: [], sector: [], cube: [], cuboid: [], cylinder: [], cone: [] })
+// حالة توسيع شريط الأشكال (سطر واحد افتراضياً + زر «المزيد»)
+const shapesExpanded = ref(false)
+
+const errors = reactive({ circle: '', square: '', rect: '', triangle: '', right: '', sphere: '', rhombus: '', parallelogram: '', trapezoid: '', polygon: '', ellipse: '', sector: '', cube: '', cuboid: '', cylinder: '', cone: '', pyramid: '', prism: '', hemisphere: '' })
+const results = reactive({ circle: [], square: [], rect: [], triangle: [], right: [], sphere: [], rhombus: [], parallelogram: [], trapezoid: [], polygon: [], ellipse: [], sector: [], cube: [], cuboid: [], cylinder: [], cone: [], pyramid: [], prism: [], hemisphere: [] })
 
 const shapes = [
   { id: 'circle', ar: 'الدائرة', en: 'Circle', icon: '⭕' },
@@ -62,10 +71,13 @@ const shapes = [
   { id: 'ellipse', ar: 'القطع الناقص', en: 'Ellipse', icon: '🥚' },
   { id: 'sector', ar: 'القطاع الدائري', en: 'Sector', icon: '🍕' },
   { id: 'sphere', ar: 'الكرة', en: 'Sphere', icon: '🔵' },
+  { id: 'hemisphere', ar: 'شبه الكرة', en: 'Hemisphere', icon: '🌗' },
   { id: 'cube', ar: 'المكعب', en: 'Cube', icon: '🧊' },
   { id: 'cuboid', ar: 'متوازي المستطيلات', en: 'Cuboid', icon: '📦' },
   { id: 'cylinder', ar: 'الأسطوانة', en: 'Cylinder', icon: '🛢️' },
-  { id: 'cone', ar: 'المخروط', en: 'Cone', icon: '🍦' }
+  { id: 'cone', ar: 'المخروط', en: 'Cone', icon: '🍦' },
+  { id: 'pyramid', ar: 'الهرم', en: 'Pyramid', icon: '⛰️' },
+  { id: 'prism', ar: 'المنشور', en: 'Prism', icon: '🌈' }
 ]
 
 const U2 = 'geo.unit2', U3 = 'geo.unit3', U = 'geo.unit'
@@ -103,6 +115,9 @@ function calc(shape) {
     case 'cuboid': return calcCuboid()
     case 'cylinder': return calcCylinder()
     case 'cone': return calcCone()
+    case 'hemisphere': return calcHemisphere()
+    case 'pyramid': return calcPyramid()
+    case 'prism': return calcPrism()
   }
 }
 
@@ -357,6 +372,57 @@ function calcCone() {
   ]
   saveTool('geometry', 'cone', 'r=' + r + ', h=' + h)
 }
+function calcHemisphere() {
+  const r = parseFloat(hemiR.value)
+  if (!(r > 0) || !Number.isFinite(r)) { errors.hemisphere = t('geo.err.r'); results.hemisphere = []; return }
+  errors.hemisphere = ''
+  results.hemisphere = [
+    { label: t('geo.volume'), raw: (2 / 3) * Math.PI * Math.pow(r, 3), unit: t(U3), formula: 'V = (2/3) × π × r³' },
+    { label: t('geo.curvedSurface'), raw: 2 * Math.PI * r * r, unit: t(U2), formula: 'C = 2 × π × r²' },
+    { label: t('geo.baseArea'), raw: Math.PI * r * r, unit: t(U2), formula: 'Aᵦ = π × r²' },
+    { label: t('geo.surface'), raw: 3 * Math.PI * r * r, unit: t(U2), formula: 'S = 3 × π × r²' },
+    { label: t('geo.diag2'), raw: 2 * r, unit: t(U), formula: 'd = 2 × r' }
+  ]
+  saveTool('geometry', 'hemisphere', 'r=' + r)
+}
+function calcPyramid() {
+  const a = parseFloat(pyrA.value)
+  const h = parseFloat(pyrH.value)
+  if (!(a > 0) || !(h > 0) || !Number.isFinite(a) || !Number.isFinite(h)) { errors.pyramid = t('geo.err.rect'); results.pyramid = []; return }
+  errors.pyramid = ''
+  const half = a / 2
+  const slant = Math.sqrt(h * h + half * half)
+  const baseArea = a * a
+  const lateral = 2 * a * slant
+  results.pyramid = [
+    { label: t('geo.volume'), raw: (baseArea * h) / 3, unit: t(U3), formula: 'V = (a² × h) ÷ 3' },
+    { label: t('geo.baseArea'), raw: baseArea, unit: t(U2), formula: 'Aᵦ = a²' },
+    { label: t('geo.slant'), raw: slant, unit: t(U), formula: 'l = √(h² + (a/2)²)' },
+    { label: t('geo.lateral'), raw: lateral, unit: t(U2), formula: 'L = 2 × a × l' },
+    { label: t('geo.surface'), raw: baseArea + lateral, unit: t(U2), formula: 'S = a² + 2 × a × l' },
+    { label: t('geo.edge'), raw: Math.sqrt(h * h + half * half * 2), unit: t(U), formula: 'e = √(h² + a²/2)' }
+  ]
+  saveTool('geometry', 'pyramid', 'a=' + a + ', h=' + h)
+}
+function calcPrism() {
+  const n = parseInt(prmN.value, 10)
+  const s = parseFloat(prmS.value)
+  const h = parseFloat(prmH.value)
+  if (!Number.isInteger(n) || n < 3) { errors.prism = t('geo.err.poly'); results.prism = []; return }
+  if (!(s > 0) || !(h > 0) || !Number.isFinite(s) || !Number.isFinite(h)) { errors.prism = t('geo.err.rect'); results.prism = []; return }
+  errors.prism = ''
+  const baseArea = (n * s * s) / (4 * Math.tan(Math.PI / n))
+  const per = n * s
+  const lateral = per * h
+  results.prism = [
+    { label: t('geo.volume'), raw: baseArea * h, unit: t(U3), formula: 'V = Aᵦ × h' },
+    { label: t('geo.baseArea'), raw: baseArea, unit: t(U2), formula: 'Aᵦ = (n × s²) ÷ (4 tan(π/n))' },
+    { label: t('geo.basePerimeter'), raw: per, unit: t(U), formula: 'Pᵦ = n × s' },
+    { label: t('geo.lateral'), raw: lateral, unit: t(U2), formula: 'L = Pᵦ × h' },
+    { label: t('geo.surface'), raw: 2 * baseArea + lateral, unit: t(U2), formula: 'S = 2Aᵦ + L' }
+  ]
+  saveTool('geometry', 'prism', 'n=' + n + ', s=' + s + ', h=' + h)
+}
 </script>
 
 <template>
@@ -367,19 +433,24 @@ function calcCone() {
       <p class="section-sub">{{ L('اختر شكلاً واكتب أبعاده لتظهر كل النتائج مباشرة مع المعادلة المستخدمة.', 'Pick a shape, type its measurements, and watch every result appear with the formula behind it.') }}</p>
     </header>
 
-    <!-- ════ شريط اختيار الشكل ════ -->
-    <div class="calc-bar shape-bar" role="tablist" :aria-label="L('الأشكال الهندسية', 'Geometric shapes')">
-      <button
-        v-for="sh in shapes"
-        :key="sh.id"
-        type="button"
-        class="geo-tab"
-        :class="{ active: activeShape === sh.id }"
-        role="tab"
-        :aria-selected="String(activeShape === sh.id)"
-        :aria-controls="sh.id + '-panel'"
-        @click="activeShape = sh.id"
-      >{{ sh.icon }} <span>{{ L(sh.ar, sh.en) }}</span></button>
+    <!-- ════ شريط اختيار الشكل (سطر واحد + زر المزيد) ════ -->
+    <div class="shape-zone">
+      <div class="calc-bar shape-bar" :class="{ 'is-collapsed': !shapesExpanded }" role="tablist" :aria-label="L('الأشكال الهندسية', 'Geometric shapes')">
+        <button
+          v-for="sh in shapes"
+          :key="sh.id"
+          type="button"
+          class="geo-tab"
+          :class="{ active: activeShape === sh.id }"
+          role="tab"
+          :aria-selected="String(activeShape === sh.id)"
+          :aria-controls="sh.id + '-panel'"
+          @click="activeShape = sh.id"
+        >{{ sh.icon }} <span>{{ L(sh.ar, sh.en) }}</span></button>
+      </div>
+      <button type="button" class="geo-more" :aria-expanded="String(shapesExpanded)" @click="shapesExpanded = !shapesExpanded">
+        {{ shapesExpanded ? L('أقل ▲', 'Less ▲') : L('المزيد ▼', 'More ▼') }}
+      </button>
     </div>
 
     <div class="calc-layout calc-layout--ops">
@@ -533,6 +604,27 @@ function calcCone() {
                 <div id="sphere-error" class="error-msg" role="alert" aria-live="polite">{{ errors.sphere }}</div>
               </div>
               <button type="button" class="btn-primary" @click="calc('sphere')">{{ L('احسب الكرة', 'Calculate sphere') }}</button>
+            </div>
+
+            <!-- شبه الكرة -->
+            <div class="geo-panel" :class="{ active: activeShape === 'hemisphere' }" id="hemisphere-panel" role="tabpanel" :aria-label="L('حساب شبه الكرة', 'Hemisphere calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 140 110" width="140" height="110" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('نصف كرة مع نصف قطره وقاعدته الدائرية', 'Hemisphere with its radius and circular base')">
+                  <path d="M25,75 A45,45 0 0,1 115,75" fill="none" stroke="#818cf8" stroke-width="2" opacity="0.8"/>
+                  <ellipse cx="70" cy="75" rx="45" ry="14" fill="none" stroke="#818cf8" stroke-width="1.5" opacity="0.55"/>
+                  <line x1="70" y1="75" x2="70" y2="30" stroke="#a78bfa" stroke-width="1.5" opacity="0.6"/>
+                  <circle cx="70" cy="75" r="2.5" fill="#818cf8"/>
+                  <text x="62" y="52" fill="#a78bfa" font-size="9" font-family="Cairo,sans-serif" text-anchor="end">r</text>
+                  <line x1="25" y1="75" x2="115" y2="75" stroke="#a78bfa" stroke-width="1" opacity="0.35" stroke-dasharray="3 2"/>
+                </svg>
+              </div>
+              <div class="formula-bar">V = (2/3) × π × r³ | S = 3 × π × r²</div>
+              <div class="input-group">
+                <label for="hemi-r">{{ L('نصف القطر (r)', 'Radius (r)') }}</label>
+                <input type="number" id="hemi-r" v-model="hemiR" placeholder="3" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="hemi-error" @keydown.enter.prevent="calc('hemisphere')" />
+                <div id="hemi-error" class="error-msg" role="alert" aria-live="polite">{{ errors.hemisphere }}</div>
+              </div>
+              <button type="button" class="btn-primary" @click="calc('hemisphere')">{{ L('احسب شبه الكرة', 'Calculate hemisphere') }}</button>
             </div>
 
             <!-- المعين -->
@@ -818,6 +910,67 @@ function calcCone() {
               </div>
               <div id="cone-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.cone }}</div>
               <button type="button" class="btn-primary" @click="calc('cone')">{{ L('احسب المخروط', 'Calculate cone') }}</button>
+            </div>
+
+            <!-- الهرم -->
+            <div class="geo-panel" :class="{ active: activeShape === 'pyramid' }" id="pyramid-panel" role="tabpanel" :aria-label="L('حساب الهرم', 'Pyramid calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 140 122" width="140" height="122" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('هرم قاعدته مربعة مع ارتفاعه', 'Square-based pyramid with its height')">
+                  <polygon points="20,80 70,102 120,80 70,58" fill="none" stroke="#f472b6" stroke-width="1.5" opacity="0.55"/>
+                  <line x1="70" y1="12" x2="20" y2="80" stroke="#f472b6" stroke-width="2" opacity="0.8"/>
+                  <line x1="70" y1="12" x2="120" y2="80" stroke="#f472b6" stroke-width="2" opacity="0.8"/>
+                  <line x1="70" y1="12" x2="70" y2="102" stroke="#f472b6" stroke-width="2" opacity="0.8"/>
+                  <line x1="70" y1="12" x2="70" y2="58" stroke="#f472b6" stroke-width="1.5" opacity="0.4" stroke-dasharray="4 3"/>
+                  <line x1="70" y1="12" x2="70" y2="80" stroke="#a78bfa" stroke-width="1" opacity="0.6" stroke-dasharray="3 2"/>
+                  <circle cx="70" cy="80" r="2.5" fill="#a78bfa"/>
+                  <text x="62" y="48" fill="#a78bfa" font-size="9" font-family="Cairo,sans-serif" text-anchor="end">h</text>
+                  <text x="42" y="98" fill="#f472b6" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">a</text>
+                </svg>
+              </div>
+              <div class="formula-bar">V = (a² × h) ÷ 3 | S = a² + 2 × a × l</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="pyr-a">{{ L('ضلع القاعدة (a)', 'Base side (a)') }}</label>
+                  <input type="number" id="pyr-a" v-model="pyrA" placeholder="4" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="pyr-error" @keydown.enter.prevent="calc('pyramid')" />
+                </div>
+                <div class="input-group">
+                  <label for="pyr-h">{{ L('الارتفاع (h)', 'Height (h)') }}</label>
+                  <input type="number" id="pyr-h" v-model="pyrH" placeholder="6" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="pyr-error" @keydown.enter.prevent="calc('pyramid')" />
+                </div>
+              </div>
+              <div id="pyr-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.pyramid }}</div>
+              <button type="button" class="btn-primary" @click="calc('pyramid')">{{ L('احسب الهرم', 'Calculate pyramid') }}</button>
+            </div>
+
+            <!-- المنشور -->
+            <div class="geo-panel" :class="{ active: activeShape === 'prism' }" id="prism-panel" role="tabpanel" :aria-label="L('حساب المنشور', 'Prism calculator')">
+              <div class="shape-figure">
+                <svg viewBox="0 0 140 126" width="140" height="126" xmlns="http://www.w3.org/2000/svg" role="img" :aria-label="L('منشور سداسي مع ارتفاعه وضلع قاعدته', 'Hexagonal prism with its height and base side')">
+                  <polygon points="102,45 86,31 54,31 38,45 54,59 86,59" fill="none" stroke="#2dd4bf" stroke-width="2" opacity="0.7"/>
+                  <path d="M38,45 L38,90 L54,104 L86,104 L102,90 L102,45" fill="none" stroke="#2dd4bf" stroke-width="2" opacity="0.7"/>
+                  <line x1="54" y1="59" x2="54" y2="104" stroke="#2dd4bf" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 3"/>
+                  <line x1="86" y1="59" x2="86" y2="104" stroke="#2dd4bf" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 3"/>
+                  <text x="70" y="26" fill="#2dd4bf" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">s</text>
+                  <text x="30" y="70" fill="#2dd4bf" font-size="9" font-family="Cairo,sans-serif" text-anchor="middle">h</text>
+                </svg>
+              </div>
+              <div class="formula-bar">V = Aᵦ × h | L = Pᵦ × h | S = 2Aᵦ + L</div>
+              <div class="field-row">
+                <div class="input-group">
+                  <label for="prm-n">{{ L('أضلاع القاعدة (n)', 'Base sides (n)') }}</label>
+                  <input type="number" id="prm-n" v-model="prmN" placeholder="6" min="3" step="1" inputmode="numeric" autocomplete="off" aria-describedby="prm-error" @keydown.enter.prevent="calc('prism')" />
+                </div>
+                <div class="input-group">
+                  <label for="prm-s">{{ L('طول ضلع القاعدة (s)', 'Base side length (s)') }}</label>
+                  <input type="number" id="prm-s" v-model="prmS" placeholder="3" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="prm-error" @keydown.enter.prevent="calc('prism')" />
+                </div>
+                <div class="input-group">
+                  <label for="prm-h">{{ L('الارتفاع (h)', 'Height (h)') }}</label>
+                  <input type="number" id="prm-h" v-model="prmH" placeholder="5" min="0" step="any" inputmode="decimal" autocomplete="off" aria-describedby="prm-error" @keydown.enter.prevent="calc('prism')" />
+                </div>
+              </div>
+              <div id="prm-error" class="error-msg" role="alert" aria-live="polite" style="margin:-0.5rem 0 0.75rem;">{{ errors.prism }}</div>
+              <button type="button" class="btn-primary" @click="calc('prism')">{{ L('احسب المنشور', 'Calculate prism') }}</button>
             </div>
 
           </div>

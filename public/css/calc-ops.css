@@ -198,8 +198,33 @@
 .calc-bar.shape-bar {
   border: 0; background: transparent; box-shadow: none; padding: 0; border-radius: 0;
 }
-.shape-bar { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin-bottom: 1.4rem; }
-.shape-bar .geo-tab { display: inline-flex; align-items: center; gap: .35rem; }
+.shape-bar { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; }
+.shape-bar .geo-tab { display: inline-flex; align-items: center; gap: .35rem; white-space: nowrap; }
+
+/* ── شريط الأشكال المطويّ: سطر واحد + زر «المزيد» ── */
+.shape-zone { margin-bottom: 1.4rem; text-align: center; }
+.shape-zone .shape-bar { position: relative; margin-bottom: .7rem; }
+.shape-bar.is-collapsed {
+  flex-wrap: nowrap; overflow: hidden; justify-content: flex-start;
+  padding: 2px 0 6px;
+}
+.shape-bar.is-collapsed::after {
+  content: ''; position: absolute; inset-block: 0; inset-inline-end: 0; width: 68px;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, var(--bg-primary));
+}
+html[dir="rtl"] .shape-bar.is-collapsed::after {
+  background: linear-gradient(to left, transparent, var(--bg-primary));
+}
+.geo-more {
+  display: inline-flex; align-items: center; gap: .3rem; cursor: pointer;
+  padding: .35rem .95rem; font: 800 .8rem var(--font-main);
+  color: var(--text-secondary); background: var(--bg-card);
+  border: 1.5px solid var(--border); border-radius: 8px;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+.geo-more:hover { color: var(--text-primary); border-color: var(--line); background: var(--hl-soft); }
+.geo-more:focus-visible { outline: 2px solid var(--border-glow); outline-offset: 2px; }
 
 /* ── رأس اللوحة + جسمها (أنظمة/هندسة) ── */
 .panel-bar {
