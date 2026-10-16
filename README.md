@@ -158,6 +158,7 @@
 │   └── views/                # 8 صفحات (home/calculator/numbers/geometry/contact + auth/services)
 ├── tests/                    # 14 ملفًا: وحدات + خدمات (auth/cloud) + مكوّنات وتكامل
 ├── scripts/screenshots.mjs   # توليد لقطات README آليًا (Playwright)
+├── scripts/og-image.mjs      # توليد صورة المعاينة الاجتماعية public/og-image.png (1200×630)
 ├── supabase/                 # schema.sql + SETUP.md لقاعدة البيانات
 ├── docs/screenshots/         # لقطات الشاشة (مولَّدة بـ npm run shots)
 ├── .github/workflows/        # deploy.yml (نشر Pages) + ci.yml (اختبارات على كل PR)
@@ -213,6 +214,7 @@ npm run preview    # معاينة البناء الإنتاجي
 npm test           # تشغيل الاختبارات (Vitest)
 npm run test:watch # الاختبارات في وضع المراقبة
 npm run shots      # توليد لقطات الشاشة في docs/screenshots (يحتاج npx playwright install chromium مرة واحدة)
+npm run og         # توليد صورة المعاينة الاجتماعية public/og-image.png (1200×630)
 ```
 
 > **ملاحظة Windows:** إن حجب PowerShell سكربت `npm`، استخدم `npm.cmd`.

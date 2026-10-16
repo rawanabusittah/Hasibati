@@ -45,6 +45,9 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,woff,woff2}'],
+        // صورة المعاينة الاجتماعية تُخدَم لزوّاح المنصّات فقط، فلا داعي
+        // لتحميلها مسبقاً داخل تطبيق PWA (توفير ~430KB من التخزين المؤقت).
+        globIgnores: ['**/og-image.png'],
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
         clientsClaim: true,

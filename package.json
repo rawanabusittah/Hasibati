@@ -14,7 +14,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "shots": "node scripts/screenshots.mjs"
+    "shots": "node scripts/screenshots.mjs",
+    "og": "node scripts/og-image.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
